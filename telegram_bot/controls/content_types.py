@@ -1,5 +1,5 @@
 from create_menus import *
-from telegram_bot.main import bot
+from main import bot
 
 
 async def func(message):
