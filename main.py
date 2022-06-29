@@ -1,4 +1,5 @@
 import telebot
+import asyncio
 from telebot import types
 
 
@@ -6,18 +7,18 @@ bot = telebot.TeleBot('5510546300:AAGhyj2jzJ8saz5LW7FoDUQ1OuYYYPFoKGQ')
 
 
 @bot.message_handler(commands=['start'])
-async def start(message):
+def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    await create_start_menu(markup,message.chat.id)
+    asyncio.run(create_start_menu(markup,message.chat.id))
     bot.send_message(message.chat.id,
                      text="Привет, {0.first_name}! Я BuyVideoCardsBot".format(
                          message.from_user), reply_markup=markup)
 
 
 @bot.message_handler(commands=['adm'])
-async def adm(message):
+def adm(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    await create_adm_menu(markup,message.chat.id)
+    asyncio.run(create_adm_menu(markup,message.chat.id))
     bot.send_message(message.chat.id,
                      text="Теперь вы адиминстратор".format(
                          message.from_user), reply_markup=markup)
@@ -48,6 +49,10 @@ async def create_main_menu(markup, chat_id):
 
 
 @bot.message_handler(content_types=['text'])
+def text(message):
+    asyncio.run(func(message))
+
+
 async def func(message):
     if (message.text == "Меню"):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
