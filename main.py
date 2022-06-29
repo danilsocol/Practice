@@ -1,9 +1,9 @@
 import telebot
 import asyncio
-from telebot import types
+import settings
 from telegram_bot.controls.create_menus import *
 
-bot = telebot.TeleBot('5510546300:AAGhyj2jzJ8saz5LW7FoDUQ1OuYYYPFoKGQ')
+bot = telebot.TeleBot(settings.API_KEY)
 
 #Text
 @bot.message_handler(content_types=['text'])
