@@ -73,12 +73,10 @@ class AvitoParse:
                                                         "iva-item-descriptionStep-C0ty1").text  # описание
         return card
 
-    def parse_20_cards(self):
+    def parse_20_cards(self, request, price_from, price_to):
         mass_of_cards = []
-        for el in self.get_ads(request, price_from = None, price_to = None):
+        for el in self.get_ads(request, price_from, price_to):
             mass_of_cards.append(self.parse_card(el))
         return mass_of_cards
 
-p = AvitoParse("Екатеринбург")
-p.avito_start()
-p.parse_20_cards("Видеокарты")
+
