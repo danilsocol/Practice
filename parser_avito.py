@@ -78,5 +78,14 @@ class AvitoParse:
         for el in self.get_ads(request, price_from, price_to):
             mass_of_cards.append(self.parse_card(el))
         return mass_of_cards
+ 
+city = "Екатеринбург"
+request = "Видеокарты"
+price_from = 100
+price_to = 10000
+
+p = AvitoParse(city)
+p.avito_start()
+p.parse_20_cards(request, price_from, price_to)
 
 
