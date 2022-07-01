@@ -6,13 +6,10 @@ import time
 
 class AvitoParse:
 
-    def __init__(self, request, city, price_from=None, price_to=None):
+    def __init__(self, city):
         self.driver = webdriver.Chrome()
-        self.request = request
         self.city = city
-        self.price_from = price_from
-        self.price_to = price_to
-
+       
     def __del__(self):
         self.driver.close()
 
@@ -30,30 +27,30 @@ class AvitoParse:
         self.driver.find_element(By.XPATH,
                                  '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()  
 
-    def get_ads(self):
-        self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{self.request}\n")
+    def get_ads(self, request, price_from = None, price_to = None):
+        self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{request}\n")
 
-        if self.price_from == None and self.price_to == None:
+        if price_from == None and price_to == None:
             pass
-        elif self.price_from == None:
+        elif price_from == None:
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[2]/input').send_keys(
-                f"{self.price_to}")
+                f"{price_to}")
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
-        elif self.price_to == None:
+        elif price_to == None:
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[1]/input').send_keys(
-                f"{self.price_from}")
+                f"{price_from}")
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
         else:
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[1]/input').send_keys(
-                f"{self.price_from}")
+                f"{price_from}")
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[2]/input').send_keys(
-                f"{self.price_to}")
+                f"{price_to}")
             self.driver.find_element(By.XPATH,
                                      '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
         time.sleep(2)
@@ -78,10 +75,10 @@ class AvitoParse:
 
     def parse_20_cards(self):
         mass_of_cards = []
-        for el in self.get_ads():
+        for el in self.get_ads(request, price_from = None, price_to = None):
             mass_of_cards.append(self.parse_card(el))
         return mass_of_cards
 
-p = AvitoParse("Видеокарты", "Екатеринбург", 100, 20000)
+p = AvitoParse("Екатеринбург")
 p.avito_start()
-p.parse_20_cards()
+p.parse_20_cards("Видеокарты")
