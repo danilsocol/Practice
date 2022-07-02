@@ -15,7 +15,7 @@ class AvitoParse:
 
     def avito_start(self):
         try:
-            self.driver.get('https://www.avito.ru/#block')  # открывает главную страницу Авито
+            self.driver.get('https://www.avito.ru/')  # открывает главную страницу Авито
             time.sleep(3)  
             self.driver.find_element(By.CLASS_NAME, "styles-title-UgMQ7")
         except NoSuchElementException:
@@ -25,7 +25,7 @@ class AvitoParse:
             pass
         else:
 
-            self.driver.find_element(By.CLASS_NAME, "main-root-ABYo0").click()  # выбор города
+            self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
 
             self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(
                 f"{self.city}")  # вписываем нужный город, который передал пользователь
