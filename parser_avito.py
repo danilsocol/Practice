@@ -7,52 +7,50 @@ import time
 class AvitoParse:
 
     def __init__(self, city):
+        
         self.driver = webdriver.Chrome()
         self.city = city
        
-    def __del__(self):
+     def __del__(self):
         self.driver.close()
 
     def avito_start(self):
-        self.driver.get('https://www.avito.ru/')  # открывает главную страницу авито
-        time.sleep(3)  # ждем 3 секунды, чтобы избежать блока
-
-        self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
-        self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(
-            f"{self.city}")  # вписываем нужный город, который передал пользователь
-        time.sleep(3)
-        self.driver.find_element(By.XPATH,
-                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[1]/div[2]/div/ul/li[1]').click()
-        time.sleep(3)
-        self.driver.find_element(By.XPATH,
-                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()  
+        try:
+            self.driver.get('https://www.avito.ru/')  # открывает главную страницу авито
+            time.sleep(3)  # ждем 3 секунды, чтобы избежать блока
+            self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV")
+        except:
+            self.driver.refresh()
+        if self.city == 'Челябинск':
+            pass
+        else:
+            self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
+            self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(
+                f"{self.city}")  # вписываем нужный город, который передал пользователь
+            time.sleep(2)
+            self.driver.find_element(By.XPATH,
+                                     '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[1]/div[2]/div/ul/li[1]').click()
+            time.sleep(2)
+            self.driver.find_element(By.XPATH,
+                                     '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()  
 
     def get_ads(self, request, price_from = None, price_to = None):
         self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{request}\n")
+        input_prices = self.driver.find_elements(By.CLASS_NAME, "styles-root-vSsLn")[0]
 
         if price_from == None and price_to == None:
             pass
         elif price_from == None:
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[2]/input').send_keys(
-                f"{price_to}")
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
+            input_prices.find_elements(By.TAG_NAME, "input")[1].send_keys(f"{price_to}")
+            self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
         elif price_to == None:
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[1]/input').send_keys(
-                f"{price_from}")
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
+            input_prices.find_elements(By.TAG_NAME, "input")[0].send_keys(f"{price_from}")
+            self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
         else:
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[1]/input').send_keys(
-                f"{price_from}")
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[1]/form/div[5]/div/div[2]/div/div/div/div/div/div/label[2]/input').send_keys(
-                f"{price_to}")
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[3]/div[3]/div[1]/div/div[2]/div[2]/div/button[1]').click()
+            input_prices.find_elements(By.TAG_NAME, "input")[0].send_keys(f"{price_from}")
+            input_prices.find_elements(By.TAG_NAME, "input")[1].send_keys(f"{price_to}")
+            self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
+            
         time.sleep(2)
         links_on_page = self.driver.find_elements(By.CLASS_NAME, "iva-item-content-rejJg")[:20]
         try:
@@ -78,14 +76,13 @@ class AvitoParse:
         for el in self.get_ads(request, price_from, price_to):
             mass_of_cards.append(self.parse_card(el))
         return mass_of_cards
- 
-city = "Екатеринбург"
-request = "Видеокарты"
-price_from = 100
+    
+city = "Уфа"
+request = "Ковры"
+price_from = None
 price_to = 10000
 
 p = AvitoParse(city)
 p.avito_start()
 p.parse_20_cards(request, price_from, price_to)
-
 
