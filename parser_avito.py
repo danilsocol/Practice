@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import time
 
 
+
 class AvitoParse:
     def __init__(self, city):
         self.driver = webdriver.Chrome()
@@ -20,21 +21,21 @@ class AvitoParse:
             self.driver.find_element(By.CLASS_NAME, "styles-title-UgMQ7")
         except NoSuchElementException:
             self.driver.refresh()
-
-        if self.city == 'Челябинск':
-            pass
-        else:
-
+        try:
             self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
-
             self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(
-                f"{self.city}")  # вписываем нужный город, который передал пользователь
-            time.sleep(2)
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[1]/div[2]/div/ul/li[1]').click()
-            time.sleep(2)
-            self.driver.find_element(By.XPATH,
-                                     '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()
+                    f"{self.city}")
+        except NoSuchElementException:
+            self.driver.refresh()
+            self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()
+            # вписываем нужный город, который передал пользователь
+            self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(f"{self.city}")
+        time.sleep(2)
+        self.driver.find_element(By.XPATH,
+                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[1]/div[2]/div/ul/li[1]').click()
+        time.sleep(2)
+        self.driver.find_element(By.XPATH,
+                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()
 
     def get_ads(self, request, price_from: None, price_to: None):
         self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{request}\n")
@@ -70,8 +71,8 @@ class AvitoParse:
         card['url'] = card_element.find_element(By.TAG_NAME, "a").get_attribute('href')  # ссылка
         card['title'] = card_element.find_element(By.TAG_NAME, "h3").text  # название
         card['price'] = card_element.find_elements(By.TAG_NAME, "meta")[1].get_attribute('content')  # цена
-        card['description'] = card_element.find_element(By.CLASS_NAME,
-                                                        "iva-item-descriptionStep-C0ty1").text  # описание
+        # card['description'] = card_element.find_element(By.CLASS_NAME,
+        #                                                 "iva-item-descriptionStep-C0ty1").text  # описание
         return card
 
     def parse_20_cards(self, request, price_from, price_to):
@@ -85,6 +86,7 @@ class AvitoParse:
         soup = BeautifulSoup(self.driver.page_source, features="html.parser")
         price = int(soup.find('span', {'itemprop': 'price'}).get_text().replace('\xa0', ''))
         return price
+
 
 
 user_city = "Уфа"
