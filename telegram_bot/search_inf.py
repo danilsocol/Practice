@@ -1,4 +1,4 @@
-class user_inf:
+class search_inf:
 
     city = ""
     sphere = ""
