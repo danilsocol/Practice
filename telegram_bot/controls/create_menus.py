@@ -10,6 +10,7 @@ class create_menus:
     markup_range_type = 0
     markup_main_menu = 0
     markup_menu_technical_support = 0
+    markup_menu_interval_selection = 0
 
     def create_markup(self):
 
@@ -31,14 +32,17 @@ class create_menus:
         create_menus.markup_menu_technical_support = types.ReplyKeyboardMarkup(resize_keyboard=True)
         asyncio.run(create_menus.create_menu_technical_support(create_menus.markup_menu_technical_support))
 
+        create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        asyncio.run(create_menus.create_menu_technical_support(create_menus.markup_menu_technical_support))
+
+
 
     async def create_adm_menu(markup):
         btn_activity = types.KeyboardButton("Активность")
         btn_number_of_requests = types.KeyboardButton("Кол-во запросов")
         btn_number_of_new_users = types.KeyboardButton("Кол-во новых пользователей")
-        btn_number_of_ads = types.KeyboardButton("Кол-во объявлений")
         btn_normal_mode = types.KeyboardButton("Режим посетителя")
-        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users, btn_number_of_ads, btn_normal_mode)
+        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,  btn_normal_mode)
 
 
     async def create_start_menu(markup):
@@ -75,3 +79,12 @@ class create_menus:
         btn_menu = types.KeyboardButton("Меню")
         btn_back = types.KeyboardButton("Назад")
         markup.add(btn_back, btn_menu)
+
+
+    async def create_menu_interval_selection(markup):
+        btn_day = types.KeyboardButton("День")
+        btn_week = types.KeyboardButton("Неделя")
+        btn_month = types.KeyboardButton("Месяц")
+        btn_year = types.KeyboardButton("Год")
+        markup.add(btn_day, btn_week, btn_month, btn_year)
+

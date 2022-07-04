@@ -5,8 +5,7 @@ from telegram_bot.controls.create_menus import create_menus
 
 
 class collect_inf:
-    user_dict = dict() # словарь (ключ чата, user) #
-    #start_coll = True # вернуть старого бота
+    user_dict = dict()
 
     async def collecting_inf(message):
 
