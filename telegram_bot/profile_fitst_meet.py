@@ -24,8 +24,6 @@ class profile_fitst_meet:
 
     async def get_city_prof_as(message):
         profile_fitst_meet.profile_dict[message.chat.id].city = message.text
-        profile_fitst_meet.profile_dict[message.chat.id].reg_date = datetime.date.today()
-        profile_fitst_meet.profile_dict[message.chat.id].date_last_request = datetime.date.today()
         bot.send_message(message.chat.id,
                          text="Спасибо, теперь вы можете продолжить)".format(
                              message.from_user),reply_markup=create_menus.markup_start_menu) # надо внести в бд
