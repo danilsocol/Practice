@@ -1,0 +1,20 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+fig = plt.figure(figsize=(6, 4))
+ax = fig.add_subplot()
+
+def grp(step,mass,list_x):
+
+    x = [f'{list_x[i]}'for i in range(step)] # кол-во столбцов , так же подпись снизу
+    y = mass #
+    ax.bar(x, y)
+    #plt.plot(10,5,1)
+
+    #plt.savefig('saved_figure.png')
+    plt.show()
+
+
+grp(5,[10,5,6,8,18],['Пон','В','С','Ч','Пят',])
+['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье']

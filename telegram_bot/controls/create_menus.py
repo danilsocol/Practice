@@ -82,9 +82,8 @@ class create_menus:
 
 
     async def create_menu_interval_selection(markup):
-        btn_day = types.KeyboardButton("День")
         btn_week = types.KeyboardButton("Неделя")
         btn_month = types.KeyboardButton("Месяц")
         btn_year = types.KeyboardButton("Год")
-        markup.add(btn_day, btn_week, btn_month, btn_year)
+        markup.add(btn_week, btn_month, btn_year)
 

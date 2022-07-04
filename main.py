@@ -8,6 +8,9 @@ from telegram_bot.profile_fitst_meet import profile_fitst_meet
 from telegram_bot.controls.user_text_editor import user_text_editor
 from telegram_bot.controls.create_menus import create_menus
 
+
+
+
 mode_adm = False
 create_menus.create_markup(0)
 
@@ -38,7 +41,7 @@ def adm(message):
 @bot.message_handler(content_types=['text'])
 def text(message):
     if(mode_adm):
-        asyncio.run(adm_text_editor.editor(message))
+        asyncio.run(adm_text_editor.editor_menu_adm(message))
     else:
         asyncio.run(user_text_editor.user_editor(message))
 
