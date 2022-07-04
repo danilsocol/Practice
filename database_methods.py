@@ -1,25 +1,23 @@
 import sqlite3
 import json
+import parser_avito as pa
 
-conn = sqlite3.connect('BuyBot.db')
-cur = conn.cursor()
-cur.execute("""
-CREATE TRIGGER price_update
-AFTER UPDATE ON Favourites
-WHEN :OLD.price<>:NEW.price
-BEGIN
-    INSERT INTO Favourites_price_updates(fav_id, updated, price)
-    VALUES (id, datetime(now), :NEW.price)
-END;
-""")
+#TODO: асинхронность
 
-cur.execute("""
-CREATE TRIGGER add_fav_row
-AFTER INSERT ON Favourites
-BEGIN
-    INSERT INTO Favourites_price_updates(fav_id, updated, price, action)
-    VALUES (id, datetime(now), price, 'start')
-END;
-""")
+#добавление пользовател€ в бд
+def create_user(chat_id, city):
+    conn = sqlite3.connect('BuyBot.db')
+    cur = conn.cursor()
+    cur.execute("""
+    INSERT INTO Users VALUES (chat_id, city, datetime(now))
+    """)
+    cur.commit()
 
-conn.commit()
+#получение объ€влений с авито
+def get_avito_list(user_id, request, lower_bound, upper_bound):
+    #TODO: получить город
+    p = pa.AvitoParse(city)
+    p.avito_start()
+    data = p.parse_20_cards(request, lower_bound, upper_bound)
+    for i in range(0, len(data)):
+        print(data[i])
