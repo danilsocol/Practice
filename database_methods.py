@@ -6,13 +6,19 @@ import datetime
 
 class database_methods:
     #добавление пользователя в бд
-    def create_user(chat_id, city):
+    def create_user(chat_id, city):  #TODO: изменить, принимать данные name, surname, user_city, coins. Так же добавлять в бд дату активности и дату регистрации
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
         INSERT INTO Users VALUES (chat_id, city, datetime(now))
         """)
         cur.commit()
+
+
+    #TODO метод выдачи данных пользователя (койны имя фамилия город)
+
+
+    #TODO прием кол-во койнов и id чтоб изменить койны в бд
 
     #получение объявлений с авито
     #async def get_avito_list(user_id, request, lower_bound, upper_bound):

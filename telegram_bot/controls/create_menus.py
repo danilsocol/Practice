@@ -9,7 +9,7 @@ class create_menus:
     markup_menu_collect_inf = 0
     markup_range_type = 0
     markup_main_menu = 0
-    markup_menu_technical_support = 0
+    markup_menu_back = 0
     markup_menu_interval_selection = 0
 
     def create_markup(self):
@@ -29,8 +29,8 @@ class create_menus:
         create_menus.markup_main_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
         asyncio.run(create_menus.create_main_menu(create_menus.markup_main_menu))
 
-        create_menus.markup_menu_technical_support = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        asyncio.run(create_menus.create_menu_technical_support(create_menus.markup_menu_technical_support))
+        create_menus.markup_menu_back = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        asyncio.run(create_menus.create_menu_back(create_menus.markup_menu_back))
 
         create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)
         asyncio.run(create_menus.create_menu_technical_support(create_menus.markup_menu_technical_support))
@@ -41,13 +41,14 @@ class create_menus:
         btn_activity = types.KeyboardButton("Активность")
         btn_number_of_requests = types.KeyboardButton("Кол-во запросов")
         btn_number_of_new_users = types.KeyboardButton("Кол-во новых пользователей")
+        btn_add_user_coins = types.KeyboardButton("Добавить пользователю койны")
         btn_normal_mode = types.KeyboardButton("Режим посетителя")
-        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,  btn_normal_mode)
+        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins,  btn_normal_mode)
 
 
     async def create_start_menu(markup):
         btn_menu = types.KeyboardButton("Меню")
-        btn_technical_support = types.KeyboardButton("Техподдержка")
+        btn_technical_support = types.KeyboardButton("Личный кабинет")
         markup.add(btn_menu, btn_technical_support)
 
 
@@ -56,14 +57,12 @@ class create_menus:
         btn_favourites = types.KeyboardButton("Избранное")
         btn_view_ads = types.KeyboardButton("Просмотреть объявления")
         btn_search_history = types.KeyboardButton("История")
-        btn_notifications = types.KeyboardButton("Уведомления")
-        markup.add(btn_view_ads, btn_favourites, btn_notifications, btn_search_history, btn_back)
+        markup.add(btn_view_ads, btn_favourites, btn_search_history, btn_back)
 
 
-    async def create_menu_technical_support(markup):
-        btn_contact_administrator = types.KeyboardButton("Связаться с администратором")
+    async def create_menu_back(markup):
         back = types.KeyboardButton("Назад")
-        markup.add(btn_contact_administrator, back)
+        markup.add(back)
 
 
     async def create_range_selection(markup):

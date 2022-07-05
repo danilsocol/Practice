@@ -12,8 +12,11 @@ class user_text_editor:
         if (message.text == "Меню"):
             bot.send_message(message.chat.id, text="Вы в меню!)",reply_markup= create_menus.markup_main_menu)
 
-        elif (message.text == "Техподдержка"):
-            bot.send_message(message.chat.id, text="Что вас интересует", reply_markup=create_menus.markup_menu_technical_support)
+        elif (message.text == "Личный кабинет"): # принять фигню и вывести
+            bot.send_message(message.chat.id, text=f"Ваш личный кабинет\n"
+                                                   "Имя и Фамилия: {}\n"
+                                                   "Ваш город: {}\n"
+                                                   "У вас {} койнов", reply_markup=create_menus.markup_menu_back)
 
         elif (message.text == "Назад" ):
             bot.send_message(message.chat.id,

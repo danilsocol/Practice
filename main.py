@@ -22,7 +22,7 @@ def start(message):
         bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
         bot.send_message(message.chat.id,
                          text="Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету"
-                              "\n Введите как мне вас называть".format(
+                              "\n Введите свое Имя и фамилию через пробел".format(
                              message.from_user))
     else:
         bot.send_message(message.chat.id,
