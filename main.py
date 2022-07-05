@@ -1,13 +1,11 @@
 import asyncio
 
-from null import Null
-
 from settings import bot
 from telegram_bot.controls.adm_text_editor import adm_text_editor
 from telegram_bot.profile_fitst_meet import profile_fitst_meet
 from telegram_bot.controls.user_text_editor import user_text_editor
 from telegram_bot.controls.create_menus import create_menus
-
+from database_methods import database_methods
 
 
 
@@ -15,9 +13,12 @@ mode_adm = False
 create_menus.create_markup(0)
 
 # Commands
+
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
-    if(True): # проверка существует есть ли такой пользователей в бд
+    if(True): # database_methods.outer_user_id(message.chat.id)
         bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
         bot.send_message(message.chat.id,
                          text="Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету"

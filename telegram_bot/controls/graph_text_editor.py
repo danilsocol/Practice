@@ -1,6 +1,8 @@
-
+import calendar
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import date
 
 fig = plt.figure(figsize=(6, 4))
 ax = fig.add_subplot()
@@ -15,6 +17,14 @@ def grp(step,mass,list_x):
     #plt.savefig('saved_figure.png')
     plt.show()
 
+def week_day():
+    today = datetime.date.today()
+    week_day= []
+    for i in range(0, 7):
+        week_day[i] = (today - datetime.timedelta(days=i)).weekday()
 
-grp(5,[10,5,6,8,18],['Пон','В','С','Ч','Пят',])
+    return week_day
+
+
+grp(5,[10,5,6,8,18],week_day())
 ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье']

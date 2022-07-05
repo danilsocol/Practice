@@ -3,6 +3,7 @@ import datetime
 import profile
 from settings import bot
 from telegram_bot.controls.create_menus import create_menus
+from database_methods import database_methods
 
 
 class profile_fitst_meet:
@@ -24,6 +25,8 @@ class profile_fitst_meet:
 
     async def get_city_prof_as(message):
         profile_fitst_meet.profile_dict[message.chat.id].city = message.text
+        database_methods.create_user(message.chat.id,
+                    profile_fitst_meet.profile_dict[message.chat.id].city)
         bot.send_message(message.chat.id,
                          text="Спасибо, теперь вы можете продолжить)".format(
                              message.from_user),reply_markup=create_menus.markup_start_menu) # надо внести в бд

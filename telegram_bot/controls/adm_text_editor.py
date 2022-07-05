@@ -1,6 +1,7 @@
 import asyncio
 
 from settings import bot
+from telegram_bot.controls import graph_text_editor
 from telegram_bot.controls.create_menus import create_menus
 
 
@@ -43,27 +44,27 @@ class adm_text_editor:
     def editor_interval_as(message):
         if (adm_text_editor.adm_dictp[message.chat.id] == "act"):
             if(message.text == "Неделя"):
-                pass
+                graph_text_editor.grp(7,,)
             elif(message.text == "Месяц"):
-                pass
+                graph_text_editor.grp(30,,)
             elif(message.text == "Год"):
-                pass
+                graph_text_editor.grp(12,,)
 
         elif( adm_text_editor.adm_dictp[message.chat.id] == "req"):
             if (message.text == "Неделя"):
-                pass
+                graph_text_editor.grp(7,,)
             elif (message.text == "Месяц"):
-                pass
+                graph_text_editor.grp(30,,)
             elif (message.text == "Год"):
-                pass
+                graph_text_editor.grp(12,,)
 
         elif (adm_text_editor.adm_dictp[message.chat.id] == "rook"):
             if (message.text == "Неделя"):
-                pass
+                graph_text_editor.grp(7,,)
             elif (message.text == "Месяц"):
-                pass
+                graph_text_editor.grp(30,,)
             elif (message.text == "Год"):
-                pass
+                graph_text_editor.grp(12,,)
 
         else:
             bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
