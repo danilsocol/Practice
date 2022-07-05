@@ -1,5 +1,6 @@
 import asyncio
 
+import settings
 from settings import bot
 from telegram_bot.controls import graph_text_editor
 from telegram_bot.controls.create_menus import create_menus
@@ -9,20 +10,21 @@ class adm_text_editor:
     adm_dict = dict()
 
     async def editor_menu_adm(message):
-        if (message.text == "Режим посетителя"):
+        if (message.text == "Перейти в режим пользователя"):
+            settings.mode_adm = False
             bot.send_message(message.chat.id,
                              text="Вы вернулись".format(
                                  message.from_user), reply_markup=create_menus.markup_start_menu)
 
-        elif( message.text == "Активность"):
+        elif( message.text == "Просмотреть кол-во активности пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "act"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Кол-во запросов"):
+        elif (message.text == "Просмотреть кол-во запросов"):
             adm_text_editor.adm_dict[message.chat.id] = "req"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Кол-во новых пользователей"):
+        elif (message.text == "Просмотреть кол-во новых пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "rook"
             adm_text_editor.select_interval(message)
 

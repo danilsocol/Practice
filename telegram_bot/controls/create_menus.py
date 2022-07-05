@@ -33,16 +33,16 @@ class create_menus:
         asyncio.run(create_menus.create_menu_back(create_menus.markup_menu_back))
 
         create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        asyncio.run(create_menus.create_menu_technical_support(create_menus.markup_menu_technical_support))
+        asyncio.run(create_menus.create_menu_interval_selection(create_menus.markup_menu_interval_selection))
 
 
 
     async def create_adm_menu(markup):
-        btn_activity = types.KeyboardButton("Активность")
-        btn_number_of_requests = types.KeyboardButton("Кол-во запросов")
-        btn_number_of_new_users = types.KeyboardButton("Кол-во новых пользователей")
+        btn_activity = types.KeyboardButton("Просмотреть кол-во активности пользователей")
+        btn_number_of_requests = types.KeyboardButton("Просмотреть кол-во запросов")
+        btn_number_of_new_users = types.KeyboardButton("Просмотреть кол-во новых пользователей")
         btn_add_user_coins = types.KeyboardButton("Добавить пользователю койны")
-        btn_normal_mode = types.KeyboardButton("Режим посетителя")
+        btn_normal_mode = types.KeyboardButton("Перейти в режим пользователя")
         markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins,  btn_normal_mode)
 
 
