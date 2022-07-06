@@ -2,7 +2,7 @@ import asyncio
 
 import settings
 from settings import bot
-from telegram_bot.controls import graph_text_editor
+from telegram_bot.controls import graph_creater
 from telegram_bot.controls.create_menus import create_menus
 
 
@@ -54,27 +54,27 @@ class adm_text_editor:
     # def editor_interval_as(message):
     #     if (adm_text_editor.adm_dictp[message.chat.id] == "act"):
     #         if(message.text == "Неделя"):
-    #             graph_text_editor.grp(7,,)
+    #             graph_creater.graph_creat(7,4,graph_creater.week_day())
     #         elif(message.text == "Месяц"):
-    #             graph_text_editor.grp(30,,)
+    #             graph_creater.graph_creat(30,,graph_creater.month())
     #         elif(message.text == "Год"):
-    #             graph_text_editor.grp(12,,)
+    #             graph_creater.graph_creat(12,,graph_creater.year())
     #
     #     elif( adm_text_editor.adm_dictp[message.chat.id] == "req"):
     #         if (message.text == "Неделя"):
-    #             graph_text_editor.grp(7,,)
+    #             graph_creater.graph_creat(7, 4, graph_creater.week_day())
     #         elif (message.text == "Месяц"):
-    #             graph_text_editor.grp(30,,)
-    #         elif (message.text == "Год"):
-    #             graph_text_editor.grp(12,,)
+    #             graph_creater.graph_creat(30,, graph_creater.month())
+    #             elif (message.text == "Год"):
+    #             graph_creater.graph_creat(12,, graph_creater.year())
     #
     #     elif (adm_text_editor.adm_dictp[message.chat.id] == "rook"):
     #         if (message.text == "Неделя"):
-    #             graph_text_editor.grp(7,,)
+    #             graph_creater.graph_creat(7, 4, graph_creater.week_day())
     #         elif (message.text == "Месяц"):
-    #             graph_text_editor.grp(30,,)
-    #         elif (message.text == "Год"):
-    #             graph_text_editor.grp(12,,)
+    #             graph_creater.graph_creat(30,, graph_creater.month())
+    #             elif (message.text == "Год"):
+    #             graph_creater.graph_creat(12,, graph_creater.year())
     #
     #     else:
     #         bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
