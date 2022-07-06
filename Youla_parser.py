@@ -1,85 +1,111 @@
 import json
 import time
+import lxml
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
+from Parser import Parser
 
-static_URL = 'https://youla.ru'
-input_text = 'машины' #ввод текста (можно изменять)
-result_URL = static_URL + '/?q=' + input_text
-from_ = 30000  # Ввод поля от какого диапазона цен (можно изменять)
+
+class YoulaParser(Parser):
+    def __init__(self, city):
+        self.option = webdriver.ChromeOptions()
+        # self.option.add_argument('headless')
+        self.driver = webdriver.Chrome(options=self.option)
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.static_URL = 'https://youla.ru'
+        self.city = city
+
+    def __del__(self):
+        self.driver.close()
+
+    def start(self):  # открытие юлы, вписывание города (доделывается)
+        try:
+            self.driver.get(self.static_URL)
+            time.sleep(1)
+        except NoSuchElementException:
+            self.driver.refresh()
+        self.driver.find_element(By.TAG_NAME, 'button').click()
+        time.sleep(1)
+        self.driver.find_element(By.XPATH, "//li[@role='button']//span[text()='Город']").click()
+        time.sleep(1)
+        towns = self.driver.find_elements(By.XPATH, "//div[@data-test-component='GeolocationModal']//div[@width=240]")
+        for i in towns:
+            town = i.text
+            if town == self.city:
+                i.click()
+                break
+            else:
+                continue ##Здесь можно обработать ошибку на ввод города
+
+    def get_ads(self, from_, to_, input_text):  # поиск товара, фильтры ввода цены, установка цены от, до.
+        time.sleep(1)
+        self.driver.find_element(By.TAG_NAME, 'input').send_keys(f"{input_text}\n")
+        if from_ is None and to_ is None:
+            pass
+        elif from_ is None:
+            self.driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
+            time.sleep(1)
+        elif to_ is None:
+            self.driver.find_element(By.NAME, 'from').send_keys(f"{from_}")
+            time.sleep(1)
+        else:
+            self.driver.find_element(By.NAME, 'from').send_keys(f"{from_}")
+            time.sleep(1)
+            self.driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
+            time.sleep(1)
+
+    def parse(self):  # запуск парсера, поиск элементов с атрибутом 'data-test-component': 'ProductCard', а также запись ссылки, названия и цены товара в соответствующие списки, закрытие драйвера
+        time.sleep(2)
+        html = self.driver.page_source
+        soup = BeautifulSoup(html, 'lxml')
+        cards = soup.find_all('figure', {'data-test-component': 'ProductCard'})
+
+        new_links = []  # список ссылок
+        names = []  # список названий
+        prices = []  # список цен
+
+        for i in cards:
+            new_links.append(self.static_URL + i.find_previous('a').get('href'))
+            names.append(i.find_previous('a').get('title'))
+            prices.append(i
+                          .find('span', {'data-test-component': 'Price'})
+                          .get_text()
+                          .replace('\u205f', '')
+                          .replace('\xa0₽', ''))
+
+        new_prices = [price.replace('Цена по запросу', 'Цена не указана')
+                      if price == 'Цена по запросу' else price for price in prices]
+
+        for j in range(len(new_prices)):
+            new_prices[j] = new_prices[j].replace('руб.', '')
+
+        return self.get_result(names, new_prices, new_links)
+
+    @staticmethod
+    def get_result(names, new_prices, new_links):
+        result = []
+
+        for name, price, link in zip(names, new_prices, new_links):
+            data = {}
+            data['url'] = link
+            data['title'] = name
+            data['price'] = price
+            result.append(data)
+
+        return result
+
+
+input_text = 'Машины'  # ввод товара (можно изменять)
+input_city = 'Челябинск'   # ввод города (можно изменять)
+from_ = None  # Ввод поля от какого диапазона цен (можно изменять)
 to_ = None  # Ввод поля до какого диапазона цен (можно изменять)
-new_links = [] #список ссылок
-names = [] #список названий
-prices = [] #список цен
-new_prices = [] #список изменённых цен (.replace('Цена по запросу', 'Цена не указана'))
 
-def bs_initialization(driver):  # получение html кода нужной страницы
-    html = driver.page_source
-    return BeautifulSoup(html, 'lxml')
-
-
-def driver_initialization():  # запуск драйвера, открытие нужной веб-страницы, 'headless' - обозначает скрыть открытие браузера, фильтрация по цене
-    option = webdriver.ChromeOptions()
-    # option.add_argument('headless') ЗАКОМЕНЧЕНО!!! P.S. Потому что с ним не работает :(
-    driver = webdriver.Chrome(options=option)
-    driver.get(result_URL)
-    driver.maximize_window()
-    time.sleep(3)
-
-    input_price(driver)  # вызов метода интервала цены
-    time.sleep(3)
-    return driver
-
-
-def input_price(driver):  # поиск элемента ввода цены, установка цены от, до.
-    if from_ is None and to_ is None:
-        pass
-    elif from_ is None:
-        driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
-    elif to_ is None:
-        driver.find_element(By.NAME, 'from').send_keys(f"{from_}")
-    else:
-        driver.find_element(By.NAME, 'from').send_keys(f"{from_}")
-        driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
-
-
-def parse():  # запуск парсера, поиск элементов с атрибутом 'data-test-component': 'ProductCard', а также запись ссылки, названия и цены товара в соответствующие списки, закрытие драйвера
-    driver = driver_initialization()
-    soup = bs_initialization(driver)
-    cards = soup.find_all('figure', {'data-test-component': 'ProductCard'})
-
-    for i in cards:
-        new_links.append(static_URL + i.find_previous('a').get('href'))
-        names.append(i.find_previous('a').get('title'))
-        prices.append(i
-                      .find('span', {'data-test-component': 'Price'})
-                      .get_text()
-                      .replace('\u205f', '')
-                      .replace('\xa0₽', ''))
-
-    driver.quit()
-
-    new_prices = [price.replace('Цена по запросу', 'Цена не указана')
-    if price == 'Цена по запросу' else price for price in prices]
-
-    return { #возврат словаря с 3-мя списками
-        'название': names,
-        'цена': new_prices,
-        'ссылка': new_links
-    }
-
-
-to_json = parse()
-with open('itmes.json', 'w', encoding='windows-1251') as file: #запись в json файл
-    json.dump(to_json, file, indent=2, ensure_ascii=False)
-
-
-# def out():  # метод отображения списков ссылок, названия и цен в консоль (в лист new_prices добавляется соответствующая 'Цена не указана', если в объявлении не указана цена) МЕТОД НУЖЕН ДЛЯ ДЕБАГА!
-#
-#     for k in new_links:
-#         print('URL: ' + k)
-#     for s in names:
-#         print('NAME: ' + s)
-#     for a in new_prices:
-#         print('PRICE: ' + a)
+youla = YoulaParser(input_city)
+youla.start()
+youla.get_ads(from_, to_, input_text)
+to_json = youla.parse()
+# with open('itmes_Youla.json', 'w', encoding='windows-1251') as file:  # запись в json файл
+#     json.dump(to_json, file, indent=2, ensure_ascii=False)
