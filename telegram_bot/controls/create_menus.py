@@ -11,7 +11,7 @@ class create_menus:
     markup_main_menu = 0
     markup_menu_back = 0
     markup_menu_interval_selection = 0
-
+    markup_menu_yes_no = 0
     def create_markup(self):
 
         create_menus.markup_start_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -34,6 +34,9 @@ class create_menus:
 
         create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)
         asyncio.run(create_menus.create_menu_interval_selection(create_menus.markup_menu_interval_selection))
+
+        create_menus.markup_menu_yes_no = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        asyncio.run(create_menus.create_menu_yes_no(create_menus.markup_menu_yes_no))
 
 
 
@@ -86,3 +89,7 @@ class create_menus:
         btn_year = types.KeyboardButton("Год")
         markup.add(btn_week, btn_month, btn_year)
 
+    async def create_menu_yes_no(markup):
+        btn_yes =types.KeyboardButton("Да")
+        btn_no = types.KeyboardButton("Нет")
+        markup.add(btn_no, btn_yes)

@@ -43,6 +43,9 @@ class database_methods:
         pass
 
 
+    #Todo забрать 50 койнов у пользователя
+    #Todo выдать город пользователя
+
     #получение объявлений с авито
     #async def get_avito_list(user_id, request, lower_bound, upper_bound):
      #   #TODO: получить город

@@ -19,7 +19,7 @@ class main:
 
     @bot.message_handler(commands=['start'])
     def start(message):
-        if(True): # database_methods.outer_user_id(message.chat.id)
+        if(False): # database_methods.outer_user_id(message.chat.id)
             bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
             bot.send_message(message.chat.id,
                              text="Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету"

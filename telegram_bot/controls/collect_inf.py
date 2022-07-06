@@ -15,12 +15,14 @@ class collect_inf:
         elif (message.text == "Назад"):
             collect_inf.user_dict[message.chat.id].step -= 1
             if(collect_inf.user_dict[message.chat.id].step == 0):
-                bot.register_next_step_handler(message, collect_inf.get_city)
-                bot.send_message(message.chat.id, text="Введите название города")
+                bot.register_next_step_handler(message, collect_inf.question_search_your_city)
+                bot.send_message(message.chat.id, text="Вы будете искать в своём городе или нет?".format(
+                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
 
             elif (collect_inf.user_dict[message.chat.id].step == 1):
                 bot.register_next_step_handler(message, collect_inf.get_sphere)
-                bot.send_message(message.chat.id, text="Что вы собираетесь искать")
+                bot.send_message(message.chat.id, text="Что вы собираетесь искать".format(
+                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
 
             elif (collect_inf.user_dict[message.chat.id].step == 2):
                 bot.register_next_step_handler(message, collect_inf.get_type_range)
@@ -40,6 +42,8 @@ class collect_inf:
         elif (collect_inf.user_dict[message.chat.id].type_range == "3"):
             return "до 5000"
 
+
+
     async def processing_range_str(text,message):
         arr = []
         str = text.split(" ")
@@ -50,14 +54,33 @@ class collect_inf:
 
 
     def get_city(message):
-        asyncio.run(collect_inf.get_city_as(message))
+            asyncio.run(collect_inf.get_city_as(message))
+
+
+    def question_search_your_city(message):
+        if (message.text == "Да"):
+            #TODO Забрать из бд город пользователя и запустить get_city_as(message)
+            bot.register_next_step_handler(message, collect_inf.get_sphere)
+            collect_inf.user_dict[message.chat.id].step += 1
+            collect_inf.user_dict[message.chat.id].city = message.text  # TODO изменить
+            bot.send_message(message.chat.id,
+                             text="Что вы собираетесь искать?".format(
+                                 message.from_user), reply_markup=create_menus.markup_menu_collect_inf)
+
+        elif (message.text == "Нет"):
+            bot.send_message(message.chat.id, text="Тогда выберете город".format(
+                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
+            bot.register_next_step_handler(message, collect_inf.get_city)
+
+        else:
+            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
 
 
     async def get_city_as(message):
         if(message.text == "Назад" or message.text == "Меню"):
             await collect_inf.collecting_inf(message)
         else:
-            collect_inf.user_dict[message.chat.id].step+=1
+            collect_inf.user_dict[message.chat.id].step += 1
             collect_inf.user_dict[message.chat.id].city = message.text
             bot.register_next_step_handler(message, collect_inf.get_sphere)
             bot.send_message(message.chat.id,
@@ -88,18 +111,31 @@ class collect_inf:
         if (message.text == "Назад" or message.text == "Меню"):
             await collect_inf.collecting_inf(message)
         else:
-            collect_inf.user_dict[message.chat.id].step += 1
-            collect_inf.user_dict[message.chat.id].type_range = message.text[0]
-            bot.register_next_step_handler(message, collect_inf.get_range)
-            bot.send_message(message.chat.id, text=(
-                    "Введите диапозон например: " + f"{await collect_inf.out_exam(message)}").format(
-                message.from_user), reply_markup= create_menus.markup_menu_collect_inf)
+
+            if(message.text[0] == '1' or message.text[0] == '2' or message.text[0] == '3' ):
+                collect_inf.user_dict[message.chat.id].step += 1
+                collect_inf.user_dict[message.chat.id].type_range = message.text[0]
+                bot.register_next_step_handler(message, collect_inf.get_range)
+                bot.send_message(message.chat.id, text=(
+                        "Введите диапозон например: " + f"{await collect_inf.out_exam(message)}").format(
+                    message.from_user), reply_markup=create_menus.markup_menu_collect_inf)
+
+            else:
+                bot.send_message(message.chat.id,
+                                 text="Не верно введены данные, пожалуста повторите попытку".format(
+                                     message.from_user), reply_markup=create_menus.markup_range_type)
+                bot.register_next_step_handler(message, collect_inf.get_type_range)
 
 
 
     def get_range(message):
-        asyncio.run(collect_inf.get_range_as(message))
-
+        try:
+            asyncio.run(collect_inf.get_range_as(message))
+        except:
+            bot.send_message(message.chat.id,
+                             text="Не верно введены данные, пожалуста повторите попытку".format(
+                                 message.from_user))
+            bot.register_next_step_handler(message, collect_inf.get_range)
 
     async def get_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
