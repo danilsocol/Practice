@@ -2,23 +2,46 @@ import sqlite3
 import json
 import asyncio
 import datetime
-#TODO: асинхронность
 
 class database_methods:
+
     #добавление пользовател€ в бд
-    def create_user(chat_id, city):  #TODO: изменить, принимать данные name, surname, user_city, coins. “ак же добавл€ть в бд дату активности и дату регистрации
+    @staticmethod
+    def create_user(chat_id, city):
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
-        INSERT INTO Users VALUES (chat_id, city, datetime(now))
+        SELECT strftime('%d.%m.%Y %H:%M', DATETIME('now'))
         """)
-        cur.commit()
+        time = str(cur.fetchone()[0])
+        cur.execute("""
+        INSERT INTO Users VALUES (:chat_id, :city, :reg, :last_active, 0)
+        """, {'chat_id': chat_id, 'city': city, 'reg': time, 'last_active': time})
+        conn.commit()
+        cur.close()
+        conn.close()
 
 
-    #TODO метод выдачи данных пользовател€ (койны им€ фамили€ город)
+    #метод выдачи данных пользовател€ (койны им€ фамили€ город) - сделано!!!
+    @staticmethod
+    def get_user_data(user_id):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT * FROM Users
+        WHERE user_id = :outer
+        """, {'outer': user_id})
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        return result
 
 
     #TODO прием кол-во койнов и id чтоб изменить койны в бд
+    @staticmethod
+    def add_coins(user_id, coins_number):
+        pass
+
 
     #получение объ€влений с авито
     #async def get_avito_list(user_id, request, lower_bound, upper_bound):
@@ -29,7 +52,8 @@ class database_methods:
         #for i in range(0, len(data)):
          #   print(data[i])
 
-        #проверить есть ли id чата в бд - сделано!!!!
+    #проверить есть ли id чата в бд - сделано!!!!
+    @staticmethod
     def check_first_start(outer_user_id):
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
@@ -44,22 +68,36 @@ class database_methods:
         #TODO: ¬ыдать список новых пользователей зарегистрированных за промежуток времени
         #вернуть словарь: день - количество человек
         #потом добавить масштаб (день-недел€)
-    # async def get_list_rookie(start_date, end_date = datetime.datetime.now()):
-    #     conn = sqlite3.connect('BuyBot.db')
-    #     cur = conn.cursor()
-    #     from = datetime
-    #     cur.execute("""
-    #         SELECT * FROM Users
-    #         WHERE registration_date =:outer
-    #         """, {'outer': })
-    #     result = cur.fetchall()
-    #     cur.close()
-    #     return #list
 
-        #TODO: ¬ыдать список активных за промежуток времени
-    async def get_list_act(date):
+    @staticmethod
+    #def get_list_rookie(start_date, end_date=datetime.date.now()):
+     #   conn = sqlite3.connect('BuyBot.db')
+      #  cur = conn.cursor()
+       # start_date = datetime.date.strptime(start_date)
+        #end_date = datetime.date.strptime(end_date)
+        #days_count = datetime.timedelta(end_date - start_date)
+        #cur.execute("""
+          #  SELECT * FROM Users
+           # WHERE registration_date =:outer
+            #""")
+        # result = cur.fetchall()
+        # cur.close()
+        # return #list
+
+    #TODO: ¬ыдать список активных за промежуток времени
+    @staticmethod
+    def get_active_users(date):
         return list
 
-        #TODO:  ол-во запросов за промежуток времени
-    async def get_list_requests():
+    #TODO:  ол-во запросов за промежуток времени
+    @staticmethod
+    def get_requests_list():
       return list
+
+    @staticmethod
+    def add_request(user, request): #bounds?
+        pass
+
+    @staticmethod
+    def fill_buffer():
+        pass
