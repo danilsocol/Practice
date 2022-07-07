@@ -57,7 +57,7 @@ class YoulaParser(Parser):
             self.driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
             time.sleep(1)
 
-    def parse(self):  # запуск парсера, поиск элементов с атрибутом 'data-test-component': 'ProductCard', а также запись ссылки, названия и цены товара в соответствующие списки, закрытие драйвера
+    def parse(self, user_id):  # запуск парсера, поиск элементов с атрибутом 'data-test-component': 'ProductCard', а также запись ссылки, названия и цены товара в соответствующие списки, закрытие драйвера
         time.sleep(2)
         html = self.driver.page_source
         soup = BeautifulSoup(html, 'lxml')
@@ -82,14 +82,16 @@ class YoulaParser(Parser):
         for j in range(len(new_prices)):
             new_prices[j] = new_prices[j].replace('руб.', '')
 
-        return self.get_result(names, new_prices, new_links)
+        return self.get_result(names, new_prices, new_links, user_id)
 
     @staticmethod
-    def get_result(names, new_prices, new_links):
+    def get_result(names, new_prices, new_links, user_id=0):
         result = []
 
         for name, price, link in zip(names, new_prices, new_links):
             data = {}
+            if user_id != 0:
+                data['user_id'] = user_id
             data['url'] = link
             data['title'] = name
             data['price'] = price
@@ -98,14 +100,14 @@ class YoulaParser(Parser):
         return result
 
 
-input_text = 'Машины'  # ввод товара (можно изменять)
-input_city = 'Челябинск'   # ввод города (можно изменять)
-from_ = None  # Ввод поля от какого диапазона цен (можно изменять)
-to_ = None  # Ввод поля до какого диапазона цен (можно изменять)
+#input_text = 'Машины'  # ввод товара (можно изменять)
+#input_city = 'Челябинск'   # ввод города (можно изменять)
+#from_ = None  # Ввод поля от какого диапазона цен (можно изменять)
+#to_ = None  # Ввод поля до какого диапазона цен (можно изменять)
 
-youla = YoulaParser(input_city)
-youla.start()
-youla.get_ads(from_, to_, input_text)
-to_json = youla.parse()
+#youla = YoulaParser(input_city)
+#youla.start()
+#youla.get_ads(from_, to_, input_text)
+#to_json = youla.parse()
 # with open('itmes_Youla.json', 'w', encoding='windows-1251') as file:  # запись в json файл
 #     json.dump(to_json, file, indent=2, ensure_ascii=False)
