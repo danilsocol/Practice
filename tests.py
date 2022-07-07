@@ -20,7 +20,11 @@ temp = db.database_methods()
 
 #temp.add_fav(25102003, 'https://youla.ru/moskva/zhenskaya-odezhda/aksessuary/ochki-62c5d430678d15570c6ccffc')
 
+<<<<<<< HEAD
 data2 = temp.get_avito_ads(25102003, 'Москва', request, lower_bound, upper_bound)
+=======
+data2 = temp.get_youla_ads(25102003, 'Москва', request, lower_bound, upper_bound)
+>>>>>>> main
 for i in range(0, len(data2)):
     print(data2[i])
 #хз что возвращается, главное что в бд залезло!

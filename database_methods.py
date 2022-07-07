@@ -93,8 +93,12 @@ class database_methods:
       return list
 
     #добавл€ем в таблицу запросов
+<<<<<<< HEAD
     @staticmethod
     def add_request(outer_user, request):
+=======
+    def add_request(self, outer_user, request):
+>>>>>>> main
         #user = self.get_user_data(outer_user)
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
@@ -107,13 +111,21 @@ class database_methods:
         conn.close()
 
     #объ€влени€ с авито
+<<<<<<< HEAD
     @staticmethod
     def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
+=======
+    def get_avito_ads(self,  outer_user_id, city, request, lower_bound=None, upper_bound=None):
+>>>>>>> main
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
         p.start()
+<<<<<<< HEAD
         database_methods.add_request(outer_user_id, request)
+=======
+        self.add_request(outer_user_id, request)
+>>>>>>> main
         data = p.parse(request, lower_bound, upper_bound)
         data_list = json.dumps(data)
         # data_list = json.dumps(data_list,
@@ -128,16 +140,27 @@ class database_methods:
         conn.commit()
         cur.close()
         conn.close()
+<<<<<<< HEAD
         return data
 
     #получаем объ€влени€ с юлы
     @staticmethod
     def get_youla_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
+=======
+        return data_list
+
+    #получаем объ€влени€ с юлы
+    def get_youla_ads(self, outer_user_id, city, request, lower_bound=None, upper_bound=None):
+>>>>>>> main
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
         y = yp.YoulaParser(city)
         y.start()
+<<<<<<< HEAD
         database_methods.add_request(outer_user_id, request)
+=======
+        self.add_request(outer_user_id, request)
+>>>>>>> main
         y.get_ads(lower_bound, upper_bound, request)
         data = y.parse(outer_user_id)
         data_list = json.dumps(data)
@@ -156,8 +179,12 @@ class database_methods:
         return data
 
     #добавить в избранное по ссылке
+<<<<<<< HEAD
     @staticmethod
     def add_fav(outer_user_id, url):
+=======
+    def add_fav(self, outer_user_id, url):
+>>>>>>> main
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""

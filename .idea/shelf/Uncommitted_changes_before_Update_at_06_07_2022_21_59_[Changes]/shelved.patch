@@ -1,0 +1,439 @@
+Index: telegram_bot/controls/adm_text_editor.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\r\n\r\nimport settings\r\nfrom settings import bot\r\nfrom telegram_bot.controls import graph_text_editor\r\nfrom telegram_bot.controls.create_menus import create_menus\r\n\r\n\r\nclass adm_text_editor:\r\n    adm_dict = dict()\r\n\r\n    async def editor_menu_adm(message):\r\n        if (message.text == \"Перейти в режим пользователя\"):\r\n            settings.mode_adm = False\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Вы вернулись\".format(\r\n                                 message.from_user), reply_markup=create_menus.markup_start_menu)\r\n\r\n        elif( message.text == \"Просмотреть кол-во активности пользователей\"):\r\n            adm_text_editor.adm_dict[message.chat.id] = \"act\"\r\n            adm_text_editor.select_interval(message)\r\n\r\n        elif (message.text == \"Просмотреть кол-во запросов\"):\r\n            adm_text_editor.adm_dict[message.chat.id] = \"req\"\r\n            adm_text_editor.select_interval(message)\r\n\r\n        elif (message.text == \"Просмотреть кол-во новых пользователей\"):\r\n            adm_text_editor.adm_dict[message.chat.id] = \"rook\"\r\n            adm_text_editor.select_interval(message)\r\n\r\n        elif(message.text == \"Добавить пользователю койны\"):\r\n            bot.send_message(message.chat.id, text=\"Введите id пользователя и кол-во койнов (например: id 486468 coins 1000)\")\r\n            bot.register_next_step_handler(message, adm_text_editor.set_user_and_coins)\r\n\r\n        else:\r\n            bot.send_message(message.chat.id, text=\"На такую комманду я не запрограммировал..\")\r\n\r\n\r\n    def select_interval(message):\r\n        bot.register_next_step_handler(message, adm_text_editor.editor_interval)\r\n\r\n        bot.send_message(message.chat.id,\r\n                         text=\"Выберете промежуток времени\".format(\r\n                             message.from_user), reply_markup=create_menus.markup_menu_interval_selection)\r\n\r\n    def set_user_and_coins(message):\r\n        id_user_and_coins = message.text.split()\r\n        #Todo отправить койны и id\r\n\r\n    def editor_interval(message):\r\n        asyncio.run(adm_text_editor.editor_interval_as)\r\n\r\n\r\n    # def editor_interval_as(message):\r\n    #     if (adm_text_editor.adm_dictp[message.chat.id] == \"act\"):\r\n    #         if(message.text == \"Неделя\"):\r\n    #             graph_text_editor.grp(7,,)\r\n    #         elif(message.text == \"Месяц\"):\r\n    #             graph_text_editor.grp(30,,)\r\n    #         elif(message.text == \"Год\"):\r\n    #             graph_text_editor.grp(12,,)\r\n    #\r\n    #     elif( adm_text_editor.adm_dictp[message.chat.id] == \"req\"):\r\n    #         if (message.text == \"Неделя\"):\r\n    #             graph_text_editor.grp(7,,)\r\n    #         elif (message.text == \"Месяц\"):\r\n    #             graph_text_editor.grp(30,,)\r\n    #         elif (message.text == \"Год\"):\r\n    #             graph_text_editor.grp(12,,)\r\n    #\r\n    #     elif (adm_text_editor.adm_dictp[message.chat.id] == \"rook\"):\r\n    #         if (message.text == \"Неделя\"):\r\n    #             graph_text_editor.grp(7,,)\r\n    #         elif (message.text == \"Месяц\"):\r\n    #             graph_text_editor.grp(30,,)\r\n    #         elif (message.text == \"Год\"):\r\n    #             graph_text_editor.grp(12,,)\r\n    #\r\n    #     else:\r\n    #         bot.send_message(message.chat.id, text=\"На такую комманду я не запрограммировал..\")
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/controls/adm_text_editor.py b/telegram_bot/controls/adm_text_editor.py
+--- a/telegram_bot/controls/adm_text_editor.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/controls/adm_text_editor.py	(date 1657101895227)
+@@ -2,7 +2,7 @@
+ 
+ import settings
+ from settings import bot
+-from telegram_bot.controls import graph_text_editor
++from telegram_bot.controls import graph_creater
+ from telegram_bot.controls.create_menus import create_menus
+ 
+ 
+@@ -54,27 +54,27 @@
+     # def editor_interval_as(message):
+     #     if (adm_text_editor.adm_dictp[message.chat.id] == "act"):
+     #         if(message.text == "Неделя"):
+-    #             graph_text_editor.grp(7,,)
++    #             graph_creater.graph_creat(7,4,graph_creater.week_day())
+     #         elif(message.text == "Месяц"):
+-    #             graph_text_editor.grp(30,,)
++    #             graph_creater.graph_creat(30,,graph_creater.month())
+     #         elif(message.text == "Год"):
+-    #             graph_text_editor.grp(12,,)
++    #             graph_creater.graph_creat(12,,graph_creater.year())
+     #
+     #     elif( adm_text_editor.adm_dictp[message.chat.id] == "req"):
+     #         if (message.text == "Неделя"):
+-    #             graph_text_editor.grp(7,,)
++    #             graph_creater.graph_creat(7, 4, graph_creater.week_day())
+     #         elif (message.text == "Месяц"):
+-    #             graph_text_editor.grp(30,,)
+-    #         elif (message.text == "Год"):
+-    #             graph_text_editor.grp(12,,)
++    #             graph_creater.graph_creat(30,, graph_creater.month())
++    #             elif (message.text == "Год"):
++    #             graph_creater.graph_creat(12,, graph_creater.year())
+     #
+     #     elif (adm_text_editor.adm_dictp[message.chat.id] == "rook"):
+     #         if (message.text == "Неделя"):
+-    #             graph_text_editor.grp(7,,)
++    #             graph_creater.graph_creat(7, 4, graph_creater.week_day())
+     #         elif (message.text == "Месяц"):
+-    #             graph_text_editor.grp(30,,)
+-    #         elif (message.text == "Год"):
+-    #             graph_text_editor.grp(12,,)
++    #             graph_creater.graph_creat(30,, graph_creater.month())
++    #             elif (message.text == "Год"):
++    #             graph_creater.graph_creat(12,, graph_creater.year())
+     #
+     #     else:
+     #         bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+\ No newline at end of file
+Index: database_methods.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sqlite3\r\nimport json\r\nimport asyncio\r\nimport datetime\r\n#TODO: асинхронность\r\n\r\nclass database_methods:\r\n    #добавление пользователя в бд\r\n    def create_user(chat_id, city):  #TODO: изменить, принимать данные name, surname, user_city, coins. Так же добавлять в бд дату активности и дату регистрации\r\n        conn = sqlite3.connect('BuyBot.db')\r\n        cur = conn.cursor()\r\n        cur.execute(\"\"\"\r\n        INSERT INTO Users VALUES (chat_id, city, datetime(now))\r\n        \"\"\")\r\n        cur.commit()\r\n\r\n\r\n    #TODO метод выдачи данных пользователя (койны имя фамилия город)\r\n\r\n\r\n    #TODO прием кол-во койнов и id чтоб изменить койны в бд\r\n\r\n    #получение объявлений с авито\r\n    #async def get_avito_list(user_id, request, lower_bound, upper_bound):\r\n     #   #TODO: получить город\r\n      #  p = pa.AvitoParse(None)\r\n       # p.avito_start()\r\n        #data = p.parse_20_cards(request, lower_bound, upper_bound)\r\n        #for i in range(0, len(data)):\r\n         #   print(data[i])\r\n\r\n        #проверить есть ли id чата в бд - сделано!!!!\r\n    def check_first_start(outer_user_id):\r\n        conn = sqlite3.connect('BuyBot.db')\r\n        cur = conn.cursor()\r\n        cur.execute(\"\"\"\r\n        SELECT COUNT(*) FROM Users\r\n        WHERE user_id =:outer\r\n        \"\"\", {'outer': outer_user_id})\r\n        result = cur.fetchone()\r\n        cur.close()\r\n        return result[0] > 0    #bool\r\n\r\n        #TODO: Выдать список новых пользователей зарегистрированных за промежуток времени\r\n        #вернуть словарь: день - количество человек\r\n        #потом добавить масштаб (день-неделя)\r\n    # async def get_list_rookie(start_date, end_date = datetime.datetime.now()):\r\n    #     conn = sqlite3.connect('BuyBot.db')\r\n    #     cur = conn.cursor()\r\n    #     from = datetime\r\n    #     cur.execute(\"\"\"\r\n    #         SELECT * FROM Users\r\n    #         WHERE registration_date =:outer\r\n    #         \"\"\", {'outer': })\r\n    #     result = cur.fetchall()\r\n    #     cur.close()\r\n    #     return #list\r\n\r\n        #TODO: Выдать список активных за промежуток времени\r\n    async def get_list_act(date):\r\n        return list\r\n\r\n        #TODO: Кол-во запросов за промежуток времени\r\n    async def get_list_requests():\r\n      return list
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1251
+===================================================================
+diff --git a/database_methods.py b/database_methods.py
+--- a/database_methods.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/database_methods.py	(date 1657103098303)
+@@ -20,6 +20,10 @@
+ 
+     #TODO прием кол-во койнов и id чтоб изменить койны в бд
+ 
++    
++    #Todo забрать 50 койнов у пользователя
++    #Todo выдать город пользователя
++
+     #получение объявлений с авито
+     #async def get_avito_list(user_id, request, lower_bound, upper_bound):
+      #   #TODO: получить город
+Index: telegram_bot/profile_fitst_meet.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\r\nimport profile\r\nfrom settings import bot\r\nfrom telegram_bot.controls.create_menus import create_menus\r\nfrom database_methods import database_methods\r\n\r\n\r\nclass profile_fitst_meet:\r\n    profile_dict = dict()\r\n\r\n    def get_name_prof(message):\r\n        profile_fitst_meet.profile_dict[message.chat.id] = profile\r\n        asyncio.run(profile_fitst_meet.get_name_prof_as(message))\r\n\r\n    async def get_name_prof_as(message):\r\n        text = message.text.split()\r\n        profile_fitst_meet.profile_dict[message.chat.id].name = text[0]\r\n        profile_fitst_meet.profile_dict[message.chat.id].surname = text[1]\r\n        bot.register_next_step_handler(message, profile_fitst_meet.get_city_prof)\r\n        bot.send_message(message.chat.id,\r\n                         text=\"Введите город в котором вы проживаете\".format(\r\n                             message.from_user))\r\n\r\n    def get_city_prof(message):\r\n        asyncio.run(profile_fitst_meet.get_city_prof_as(message))\r\n\r\n    async def get_city_prof_as(message):\r\n        profile_fitst_meet.profile_dict[message.chat.id].user_city = message.text\r\n        profile_fitst_meet.profile_dict[message.chat.id].coins = 100\r\n        #database_methods.create_user(message.chat.id,\r\n      #              profile_fitst_meet.profile_dict[message.chat.id].name,\r\n      #              profile_fitst_meet.profile_dict[message.chat.id].surname,\r\n      #              profile_fitst_meet.profile_dict[message.chat.id].user_city,\r\n      #              profile_fitst_meet.profile_dict[message.chat.id].coins)\r\n        bot.send_message(message.chat.id,\r\n                         text=\"Спасибо, для того что бы вы смогли попробовать наш продукт мы зачислили вам 100 койнов, приятного пользования\".format(\r\n                             message.from_user),reply_markup=create_menus.markup_start_menu) # надо внести в бд\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/profile_fitst_meet.py b/telegram_bot/profile_fitst_meet.py
+--- a/telegram_bot/profile_fitst_meet.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/profile_fitst_meet.py	(date 1657113574257)
+@@ -10,19 +10,35 @@
+ 
+     def get_name_prof(message):
+         profile_fitst_meet.profile_dict[message.chat.id] = profile
+-        asyncio.run(profile_fitst_meet.get_name_prof_as(message))
++        try:
++            asyncio.run(profile_fitst_meet.get_name_prof_as(message))
++        except:
++            bot.send_message(message.chat.id,
++                             text="Не верно введены данные, пожалуста повторите попытку".format(
++                                 message.from_user))
++            bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
+ 
+     async def get_name_prof_as(message):
+         text = message.text.split()
++
+         profile_fitst_meet.profile_dict[message.chat.id].name = text[0]
+         profile_fitst_meet.profile_dict[message.chat.id].surname = text[1]
++
+         bot.register_next_step_handler(message, profile_fitst_meet.get_city_prof)
+         bot.send_message(message.chat.id,
+                          text="Введите город в котором вы проживаете".format(
+                              message.from_user))
+ 
+     def get_city_prof(message):
+-        asyncio.run(profile_fitst_meet.get_city_prof_as(message))
++        try:
++            asyncio.run(profile_fitst_meet.get_city_prof_as(message))
++        except:
++            bot.send_message(message.chat.id,
++                             text="Не верно введены данные, пожалуста повторите попытку".format(
++                                 message.from_user))
++            bot.register_next_step_handler(message, profile_fitst_meet.get_city_prof)
++
++
+ 
+     async def get_city_prof_as(message):
+         profile_fitst_meet.profile_dict[message.chat.id].user_city = message.text
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\r\n\r\nimport settings\r\nfrom settings import bot\r\nfrom telegram_bot.controls.adm_text_editor import adm_text_editor\r\nfrom telegram_bot.profile_fitst_meet import profile_fitst_meet\r\nfrom telegram_bot.controls.user_text_editor import user_text_editor\r\nfrom telegram_bot.controls.create_menus import create_menus\r\nfrom database_methods import database_methods\r\n\r\nclass main:\r\n\r\n\r\n    create_menus.create_markup(0)\r\n\r\n    # Commands\r\n\r\n\r\n\r\n    @bot.message_handler(commands=['start'])\r\n    def start(message):\r\n        if(True): # database_methods.outer_user_id(message.chat.id)\r\n            bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету\"\r\n                                  \"\\nВведите свое Имя и фамилию через пробел\".format(\r\n                                 message.from_user))\r\n        else:\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Привет, {0.first_name}, рад тебя видеть\".format(\r\n                                 message.from_user), reply_markup=create_menus.markup_start_menu)\r\n\r\n\r\n    @bot.message_handler(commands=['adm'])\r\n    def adm(message):\r\n        settings.mode_adm = True\r\n        bot.send_message(message.chat.id,\r\n                         text=\"Теперь вы адиминстратор\".format(\r\n                             message.from_user), reply_markup=create_menus.markup_adm_menu)\r\n\r\n\r\n    # Text\r\n    @bot.message_handler(content_types=['text'])\r\n    def text(message):\r\n        if(settings.mode_adm):\r\n            asyncio.run(adm_text_editor.editor_menu_adm(message))\r\n        else:\r\n            asyncio.run(user_text_editor.user_editor(message))\r\n\r\n\r\n    bot.polling()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/main.py	(date 1657114147086)
+@@ -19,7 +19,7 @@
+ 
+     @bot.message_handler(commands=['start'])
+     def start(message):
+-        if(True): # database_methods.outer_user_id(message.chat.id)
++        if(False): # database_methods.outer_user_id(message.chat.id)
+             bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
+             bot.send_message(message.chat.id,
+                              text="Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету"
+Index: telegram_bot/controls/create_menus.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\r\n\r\nfrom telebot import types\r\n\r\n\r\nclass create_menus:\r\n    markup_start_menu = 0\r\n    markup_adm_menu = 0\r\n    markup_menu_collect_inf = 0\r\n    markup_range_type = 0\r\n    markup_main_menu = 0\r\n    markup_menu_back = 0\r\n    markup_menu_interval_selection = 0\r\n\r\n    def create_markup(self):\r\n\r\n        create_menus.markup_start_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_start_menu(create_menus.markup_start_menu))\r\n\r\n        create_menus.markup_adm_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_adm_menu(create_menus.markup_adm_menu))\r\n\r\n        create_menus.markup_menu_collect_inf = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_menu_collect_inf(create_menus.markup_menu_collect_inf))\r\n\r\n        create_menus.markup_range_type = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_range_selection(create_menus.markup_range_type))\r\n\r\n        create_menus.markup_main_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_main_menu(create_menus.markup_main_menu))\r\n\r\n        create_menus.markup_menu_back = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_menu_back(create_menus.markup_menu_back))\r\n\r\n        create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)\r\n        asyncio.run(create_menus.create_menu_interval_selection(create_menus.markup_menu_interval_selection))\r\n\r\n\r\n\r\n    async def create_adm_menu(markup):\r\n        btn_activity = types.KeyboardButton(\"Просмотреть кол-во активности пользователей\")\r\n        btn_number_of_requests = types.KeyboardButton(\"Просмотреть кол-во запросов\")\r\n        btn_number_of_new_users = types.KeyboardButton(\"Просмотреть кол-во новых пользователей\")\r\n        btn_add_user_coins = types.KeyboardButton(\"Добавить пользователю койны\")\r\n        btn_normal_mode = types.KeyboardButton(\"Перейти в режим пользователя\")\r\n        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins,  btn_normal_mode)\r\n\r\n\r\n    async def create_start_menu(markup):\r\n        btn_menu = types.KeyboardButton(\"Меню\")\r\n        btn_technical_support = types.KeyboardButton(\"Личный кабинет\")\r\n        markup.add(btn_menu, btn_technical_support)\r\n\r\n\r\n    async def create_main_menu(markup):\r\n        btn_back = types.KeyboardButton(\"Назад\")\r\n        btn_favourites = types.KeyboardButton(\"Избранное\")\r\n        btn_view_ads = types.KeyboardButton(\"Просмотреть объявления\")\r\n        btn_search_history = types.KeyboardButton(\"История\")\r\n        markup.add(btn_view_ads, btn_favourites, btn_search_history, btn_back)\r\n\r\n\r\n    async def create_menu_back(markup):\r\n        back = types.KeyboardButton(\"Назад\")\r\n        markup.add(back)\r\n\r\n\r\n    async def create_range_selection(markup):\r\n        btn_from_to = types.KeyboardButton(\"1) от __ до __\")\r\n        btn_from = types.KeyboardButton(\"2) от __\")\r\n        btn_to = types.KeyboardButton(\"3) до __\")\r\n        btn_menu = types.KeyboardButton(\"Меню\")\r\n        btn_back = types.KeyboardButton(\"Назад\")\r\n        markup.add(btn_from_to,btn_from,btn_to,btn_back,btn_menu)\r\n\r\n\r\n    async def create_menu_collect_inf(markup):\r\n        btn_menu = types.KeyboardButton(\"Меню\")\r\n        btn_back = types.KeyboardButton(\"Назад\")\r\n        markup.add(btn_back, btn_menu)\r\n\r\n\r\n    async def create_menu_interval_selection(markup):\r\n        btn_week = types.KeyboardButton(\"Неделя\")\r\n        btn_month = types.KeyboardButton(\"Месяц\")\r\n        btn_year = types.KeyboardButton(\"Год\")\r\n        markup.add(btn_week, btn_month, btn_year)\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/controls/create_menus.py b/telegram_bot/controls/create_menus.py
+--- a/telegram_bot/controls/create_menus.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/controls/create_menus.py	(date 1657101158240)
+@@ -11,7 +11,7 @@
+     markup_main_menu = 0
+     markup_menu_back = 0
+     markup_menu_interval_selection = 0
+-
++    markup_menu_yes_no = 0
+     def create_markup(self):
+ 
+         create_menus.markup_start_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
+@@ -35,6 +35,9 @@
+         create_menus.markup_menu_interval_selection = types.ReplyKeyboardMarkup(resize_keyboard=True)
+         asyncio.run(create_menus.create_menu_interval_selection(create_menus.markup_menu_interval_selection))
+ 
++        create_menus.markup_menu_yes_no = types.ReplyKeyboardMarkup(resize_keyboard=True)
++        asyncio.run(create_menus.create_menu_yes_no(create_menus.markup_menu_yes_no))
++
+ 
+ 
+     async def create_adm_menu(markup):
+@@ -86,3 +89,7 @@
+         btn_year = types.KeyboardButton("Год")
+         markup.add(btn_week, btn_month, btn_year)
+ 
++    async def create_menu_yes_no(markup):
++        btn_yes =types.KeyboardButton("Да")
++        btn_no = types.KeyboardButton("Нет")
++        markup.add(btn_no, btn_yes)
+\ No newline at end of file
+Index: telegram_bot/controls/graph_text_editor.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/controls/graph_text_editor.py b/telegram_bot/controls/graph_creater.py
+rename from telegram_bot/controls/graph_text_editor.py
+rename to telegram_bot/controls/graph_creater.py
+--- a/telegram_bot/controls/graph_text_editor.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/controls/graph_creater.py	(date 1657101994258)
+@@ -3,28 +3,49 @@
+ import numpy as np
+ import matplotlib.pyplot as plt
+ from datetime import date
++import pandas as pd
+ 
+ fig = plt.figure(figsize=(6, 4))
+ ax = fig.add_subplot()
+ 
+-def grp(step,mass,list_x):
++class graph_creater:
++
++    def graph_creat(step,mass,list_x):
+ 
+-    x = [f'{list_x[i]}'for i in range(step)] # кол-во столбцов , так же подпись снизу
+-    y = mass #
+-    ax.bar(x, y)
+-    #plt.plot(10,5,1)
++        x = [f'{list_x[i]}'for i in range(step)] # кол-во столбцов , так же подпись снизу
++        y = mass #
++        ax.bar(x, y)
+ 
+-    #plt.savefig('saved_figure.png')
+-    plt.show()
++        plt.show()
+ 
+-def week_day():
+-    today = datetime.date.today()
+-    week_day= []
+-    for i in range(0, 7):
+-        week_day[i] = (today - datetime.timedelta(days=i)).weekday()
++    def week_day(self):
++        today = datetime.date.today()
++        week_day = []
++        for i in range(0, 7):
++            week_day.append(calendar.day_name[(datetime.date.today() - datetime.timedelta(days=i)).weekday()])
+ 
+-    return week_day
++        return week_day
+ 
+ 
+-#grp(5,[10,5,6,8,18],week_day())
+-#['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье']
+\ No newline at end of file
++    def month(self):
++        today = datetime.date.today()
++        end_date = today - datetime.timedelta(days=30)
++        res = pd.date_range(
++            min(today, end_date),
++            max(today, end_date)
++        ).strftime('%d/%m').tolist()
++        return res
++
++    def year(self):
++        today = datetime.date.today()
++        month = []
++        step = today.month
++        for i in range(0, 12):
++            month.append(calendar.month_abbr[step])
++            step -= 1
++            if (step == 0):
++                step = 12
++
++        return month
++
++#graph_creater.graph_creat(20,[10,5,6,8,18,7,5,8,6,7,1,8,7,3,5,47,9,2,7,6],graph_creater.month(0))
+Index: telegram_bot/controls/collect_inf.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\r\nimport copy\r\nfrom settings import bot\r\nfrom telegram_bot.controls.create_menus import create_menus\r\n\r\n\r\nclass collect_inf:\r\n    user_dict = dict()\r\n\r\n    async def collecting_inf(message):\r\n\r\n        if (message.text == \"Меню\"):\r\n            bot.send_message(message.chat.id, text=\"Вы в меню!)\", reply_markup=create_menus.markup_start_menu)\r\n\r\n        elif (message.text == \"Назад\"):\r\n            collect_inf.user_dict[message.chat.id].step -= 1\r\n            if(collect_inf.user_dict[message.chat.id].step == 0):\r\n                bot.register_next_step_handler(message, collect_inf.get_city)\r\n                bot.send_message(message.chat.id, text=\"Введите название города\")\r\n\r\n            elif (collect_inf.user_dict[message.chat.id].step == 1):\r\n                bot.register_next_step_handler(message, collect_inf.get_sphere)\r\n                bot.send_message(message.chat.id, text=\"Что вы собираетесь искать\")\r\n\r\n            elif (collect_inf.user_dict[message.chat.id].step == 2):\r\n                bot.register_next_step_handler(message, collect_inf.get_type_range)\r\n                bot.send_message(message.chat.id,\r\n                                 text=\"Выберете тип диапазона цены\".format(\r\n                                     message.from_user), reply_markup=create_menus.markup_range_type)\r\n\r\n            elif(collect_inf.user_dict[message.chat.id].step == -1):\r\n                bot.send_message(message.chat.id, text=\"Вы в меню!)\", reply_markup=create_menus.markup_start_menu)\r\n\r\n\r\n    async def out_exam(message):\r\n        if (collect_inf.user_dict[message.chat.id].type_range == \"1\"):\r\n            return \"от 1000 до 2000\"\r\n        elif (collect_inf.user_dict[message.chat.id].type_range == \"2\"):\r\n            return \"От 5000\"\r\n        elif (collect_inf.user_dict[message.chat.id].type_range == \"3\"):\r\n            return \"до 5000\"\r\n\r\n    async def processing_range_str(text,message):\r\n        arr = []\r\n        str = text.split(\" \")\r\n        arr.append(int(str[1]))\r\n        if (len(str) > 2):\r\n            arr.append(int(str[3]))\r\n        collect_inf.user_dict[message.chat.id].range = copy.deepcopy(arr)\r\n\r\n\r\n    def get_city(message):\r\n        asyncio.run(collect_inf.get_city_as(message))\r\n\r\n\r\n    async def get_city_as(message):\r\n        if(message.text == \"Назад\" or message.text == \"Меню\"):\r\n            await collect_inf.collecting_inf(message)\r\n        else:\r\n            collect_inf.user_dict[message.chat.id].step+=1\r\n            collect_inf.user_dict[message.chat.id].city = message.text\r\n            bot.register_next_step_handler(message, collect_inf.get_sphere)\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Что вы собираетесь искать?\".format(\r\n                                 message.from_user), reply_markup=create_menus.markup_menu_collect_inf)\r\n\r\n\r\n    def get_sphere(message):\r\n        asyncio.run(collect_inf.get_sphere_as(message))\r\n\r\n    async def get_sphere_as(message):\r\n        if (message.text == \"Назад\" or message.text == \"Меню\"):\r\n            await collect_inf.collecting_inf(message)\r\n        else:\r\n            collect_inf.user_dict[message.chat.id].step += 1\r\n            collect_inf.user_dict[message.chat.id].sphere = message.text\r\n            bot.register_next_step_handler(message, collect_inf.get_type_range)\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Выберете тип диапазона цены\".format(\r\n                                 message.from_user), reply_markup=create_menus.markup_range_type)\r\n\r\n\r\n\r\n    def get_type_range(message):\r\n        asyncio.run(collect_inf.get_type_range_as(message))\r\n\r\n    async def get_type_range_as(message):\r\n        if (message.text == \"Назад\" or message.text == \"Меню\"):\r\n            await collect_inf.collecting_inf(message)\r\n        else:\r\n            collect_inf.user_dict[message.chat.id].step += 1\r\n            collect_inf.user_dict[message.chat.id].type_range = message.text[0]\r\n            bot.register_next_step_handler(message, collect_inf.get_range)\r\n            bot.send_message(message.chat.id, text=(\r\n                    \"Введите диапозон например: \" + f\"{await collect_inf.out_exam(message)}\").format(\r\n                message.from_user), reply_markup= create_menus.markup_menu_collect_inf)\r\n\r\n\r\n\r\n    def get_range(message):\r\n        asyncio.run(collect_inf.get_range_as(message))\r\n\r\n\r\n    async def get_range_as(message):\r\n        if (message.text == \"Назад\" or message.text == \"Меню\"):\r\n            await collect_inf.collecting_inf(message)\r\n        else:\r\n            collect_inf.user_dict[message.chat.id].step = 0\r\n            await collect_inf.processing_range_str(message.text, message)\r\n            bot.send_message(message.chat.id,\r\n                             text=f\"Спасибо за подробности {collect_inf.user_dict[message.chat.id].type_range} \"\r\n                                  f\"{collect_inf.user_dict[message.chat.id].range} \"\r\n                                  f\"{collect_inf.user_dict[message.chat.id].city} \"\r\n                                  f\"{collect_inf.user_dict[message.chat.id].sphere} \".format(\r\n                                 message.from_user),reply_markup= create_menus.markup_menu_collect_inf)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/controls/collect_inf.py b/telegram_bot/controls/collect_inf.py
+--- a/telegram_bot/controls/collect_inf.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/controls/collect_inf.py	(date 1657114323478)
+@@ -15,12 +15,14 @@
+         elif (message.text == "Назад"):
+             collect_inf.user_dict[message.chat.id].step -= 1
+             if(collect_inf.user_dict[message.chat.id].step == 0):
+-                bot.register_next_step_handler(message, collect_inf.get_city)
+-                bot.send_message(message.chat.id, text="Введите название города")
++                bot.register_next_step_handler(message, collect_inf.question_search_your_city)
++                bot.send_message(message.chat.id, text="Вы будете искать в своём городе или нет?".format(
++                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
+ 
+             elif (collect_inf.user_dict[message.chat.id].step == 1):
+                 bot.register_next_step_handler(message, collect_inf.get_sphere)
+-                bot.send_message(message.chat.id, text="Что вы собираетесь искать")
++                bot.send_message(message.chat.id, text="Что вы собираетесь искать".format(
++                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
+ 
+             elif (collect_inf.user_dict[message.chat.id].step == 2):
+                 bot.register_next_step_handler(message, collect_inf.get_type_range)
+@@ -40,6 +42,8 @@
+         elif (collect_inf.user_dict[message.chat.id].type_range == "3"):
+             return "до 5000"
+ 
++
++
+     async def processing_range_str(text,message):
+         arr = []
+         str = text.split(" ")
+@@ -50,14 +54,33 @@
+ 
+ 
+     def get_city(message):
+-        asyncio.run(collect_inf.get_city_as(message))
++            asyncio.run(collect_inf.get_city_as(message))
+ 
+ 
++    def question_search_your_city(message):
++        if (message.text == "Да"):
++            #TODO Забрать из бд город пользователя и запустить get_city_as(message)
++            bot.register_next_step_handler(message, collect_inf.get_sphere)
++            collect_inf.user_dict[message.chat.id].step += 1
++            collect_inf.user_dict[message.chat.id].city = message.text  # TODO изменить
++            bot.send_message(message.chat.id,
++                             text="Что вы собираетесь искать?".format(
++                                 message.from_user), reply_markup=create_menus.markup_menu_collect_inf)
++
++        elif (message.text == "Нет"):
++            bot.send_message(message.chat.id, text="Тогда выберете город".format(
++                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
++            bot.register_next_step_handler(message, collect_inf.get_city)
++
++        else:
++            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
++
++
+     async def get_city_as(message):
+         if(message.text == "Назад" or message.text == "Меню"):
+             await collect_inf.collecting_inf(message)
+         else:
+-            collect_inf.user_dict[message.chat.id].step+=1
++            collect_inf.user_dict[message.chat.id].step += 1
+             collect_inf.user_dict[message.chat.id].city = message.text
+             bot.register_next_step_handler(message, collect_inf.get_sphere)
+             bot.send_message(message.chat.id,
+@@ -88,18 +111,31 @@
+         if (message.text == "Назад" or message.text == "Меню"):
+             await collect_inf.collecting_inf(message)
+         else:
+-            collect_inf.user_dict[message.chat.id].step += 1
+-            collect_inf.user_dict[message.chat.id].type_range = message.text[0]
+-            bot.register_next_step_handler(message, collect_inf.get_range)
+-            bot.send_message(message.chat.id, text=(
+-                    "Введите диапозон например: " + f"{await collect_inf.out_exam(message)}").format(
+-                message.from_user), reply_markup= create_menus.markup_menu_collect_inf)
++
++            if(message.text[0] == '1' or message.text[0] == '2' or message.text[0] == '3' ):
++                collect_inf.user_dict[message.chat.id].step += 1
++                collect_inf.user_dict[message.chat.id].type_range = message.text[0]
++                bot.register_next_step_handler(message, collect_inf.get_range)
++                bot.send_message(message.chat.id, text=(
++                        "Введите диапозон например: " + f"{await collect_inf.out_exam(message)}").format(
++                    message.from_user), reply_markup=create_menus.markup_menu_collect_inf)
+ 
++            else:
++                bot.send_message(message.chat.id,
++                                 text="Не верно введены данные, пожалуста повторите попытку".format(
++                                     message.from_user), reply_markup=create_menus.markup_range_type)
++                bot.register_next_step_handler(message, collect_inf.get_type_range)
++
+ 
+ 
+     def get_range(message):
+-        asyncio.run(collect_inf.get_range_as(message))
+-
++        try:
++            asyncio.run(collect_inf.get_range_as(message))
++        except:
++            bot.send_message(message.chat.id,
++                             text="Не верно введены данные, пожалуста повторите попытку".format(
++                                 message.from_user))
++            bot.register_next_step_handler(message, collect_inf.get_range)
+ 
+     async def get_range_as(message):
+         if (message.text == "Назад" or message.text == "Меню"):
+Index: telegram_bot/controls/user_text_editor.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from settings import bot\r\nfrom telegram_bot.controls.collect_inf import collect_inf\r\nfrom telegram_bot.controls.create_menus import create_menus\r\nfrom telegram_bot.search_inf import search_inf\r\n\r\n\r\nclass user_text_editor:\r\n\r\n    start_collect_inf = False\r\n\r\n    async def user_editor(message):\r\n        if (message.text == \"Меню\"):\r\n            bot.send_message(message.chat.id, text=\"Вы в меню!)\",reply_markup= create_menus.markup_main_menu)\r\n\r\n        elif (message.text == \"Личный кабинет\"): # принять фигню и вывести\r\n            bot.send_message(message.chat.id, text=f\"Ваш личный кабинет\\n\"\r\n                                                   \"Имя и Фамилия: {}\\n\"\r\n                                                   \"Ваш город: {}\\n\"\r\n                                                   \"У вас {} койнов\", reply_markup=create_menus.markup_menu_back)\r\n\r\n        elif (message.text == \"Назад\" ):\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Вы вернулись\".format(\r\n                                 message.from_user), reply_markup=create_menus.markup_start_menu)\r\n\r\n        elif(message.text == \"Просмотреть объявления\"):\r\n            user_text_editor.start_collect_inf = True\r\n            bot.send_message(message.chat.id,\r\n                             text=\"Введите название города\".format(\r\n                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)\r\n            #content_types.start_collect_inf = True\r\n            collect_inf.user_dict[message.chat.id] = search_inf\r\n            bot.register_next_step_handler(message, collect_inf.get_city)\r\n\r\n        else:\r\n            bot.send_message(message.chat.id, text=\"На такую комманду я не запрограммировал..\")\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/telegram_bot/controls/user_text_editor.py b/telegram_bot/controls/user_text_editor.py
+--- a/telegram_bot/controls/user_text_editor.py	(revision 3268d620619976135510b705b7f327b4d3ca9c72)
++++ b/telegram_bot/controls/user_text_editor.py	(date 1657113487492)
+@@ -1,3 +1,5 @@
++import asyncio
++
+ from settings import bot
+ from telegram_bot.controls.collect_inf import collect_inf
+ from telegram_bot.controls.create_menus import create_menus
+@@ -24,15 +26,39 @@
+                                  message.from_user), reply_markup=create_menus.markup_start_menu)
+ 
+         elif(message.text == "Просмотреть объявления"):
++
++            bot.send_message(message.chat.id,
++                             text="Стоимость данной операции 50 койнов"
++                                  "\nХотите продолжить".format(
++                                 message.from_user),reply_markup=create_menus.markup_menu_yes_no)
++            bot.register_next_step_handler(message, user_text_editor.question_start_viewing)
++
++            # bot.send_message(message.chat.id,
++            #                  text="Введите название города".format(
++            #                      message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
++            # #content_types.start_collect_inf = True
++            # collect_inf.user_dict[message.chat.id] = search_inf
++            # bot.register_next_step_handler(message, collect_inf.get_city)
++
++        else:
++            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
++
++    def question_start_viewing(message):
++        asyncio.run(user_text_editor.question_start_viewing_as(message))
++
++    async def question_start_viewing_as(message):
++        if(message.text == "Да"):
++            collect_inf.user_dict[message.chat.id] = search_inf
+             user_text_editor.start_collect_inf = True
++            #Todo отнять 50 койнов
+             bot.send_message(message.chat.id,
+-                             text="Введите название города".format(
+-                                 message.from_user),reply_markup=create_menus.markup_menu_collect_inf)
+-            #content_types.start_collect_inf = True
+-            collect_inf.user_dict[message.chat.id] = search_inf
+-            bot.register_next_step_handler(message, collect_inf.get_city)
++                             text="Вы будете искать в своём городе или нет?".format(
++                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
++            bot.register_next_step_handler(message, collect_inf.question_search_your_city)
+ 
++        elif(message.text == "Нет"):
++            bot.send_message(message.chat.id,
++                             text="Вы венулись в меню".format(
++                                 message.from_user),reply_markup=create_menus.markup_main_menu)
+         else:
+-            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+-
+-
++            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+\ No newline at end of file
