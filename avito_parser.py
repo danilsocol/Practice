@@ -6,11 +6,17 @@ import time
 import json
 import lxml
 from Parser import Parser
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class AvitoParse(Parser):
     def __init__(self, city):
-        self.driver = webdriver.Chrome()
+        self.option = webdriver.ChromeOptions()
+        # self.option.add_argument('headless')
+        self.capa = DesiredCapabilities.CHROME
+        self.capa["pageLoadStrategy"] = "none"
+        self.driver = webdriver.Chrome(desired_capabilities=self.capa, options=self.option)
+        self.driver.maximize_window()
         self.city = city
 
     def __del__(self):
@@ -24,23 +30,27 @@ class AvitoParse(Parser):
         except NoSuchElementException:
             self.driver.refresh()
         try:
-            self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
-            self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(
-                    f"{self.city}")
+            if self.city == 'Челябинск':
+                pass
+            else:
+                self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()  # выбор города
+                time.sleep(1)
+                self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(f"{self.city}")
+                time.sleep(2)
+                self.driver.find_element(By.XPATH,
+                                         "//ul[@data-marker='suggest-list']//li[@data-marker='suggest(0)']").click()
+                time.sleep(2)
+                self.driver.find_element(By.XPATH, "//div[@class='popup-buttons-WICnh']//button").click()
         except NoSuchElementException:
             self.driver.refresh()
             self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()
             # вписываем нужный город, который передал пользователь
             self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(f"{self.city}")
-        time.sleep(2)
-        self.driver.find_element(By.XPATH,
-                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[1]/div[2]/div/ul/li[1]').click()
-        time.sleep(2)
-        self.driver.find_element(By.XPATH,
-                                 '//*[@id="app"]/div[2]/div/div[2]/div/div[6]/div/div/span/div/div[3]/div/div[2]/div/button').click()
 
     def get_ads(self, request, price_from: None, price_to: None):
+        time.sleep(2)
         self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{request}\n")
+        time.sleep(5)
         input_prices = self.driver.find_element(By.CLASS_NAME, "styles-root-vSsLn")
 
         if price_from is None and price_to is None:
@@ -48,15 +58,19 @@ class AvitoParse(Parser):
         elif price_from is None:
             input_prices.find_elements(By.TAG_NAME, "input")[1].send_keys(f"{price_to}")
             self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
+            time.sleep(1)
         elif price_to is None:
             input_prices.find_elements(By.TAG_NAME, "input")[0].send_keys(f"{price_from}")
             self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
+            time.sleep(1)
         else:
             input_prices.find_elements(By.TAG_NAME, "input")[0].send_keys(f"{price_from}")
             input_prices.find_elements(By.TAG_NAME, "input")[1].send_keys(f"{price_to}")
+            time.sleep(1)
             self.driver.find_element(By.CLASS_NAME, "styles-box-Up_E3").click()
 
         time.sleep(2)
+
         links_on_page = self.driver.find_elements(By.CLASS_NAME, "iva-item-content-rejJg")[:20]
         try:
             vip = self.driver.find_element(By.CLASS_NAME, "items-vip-KXPvy").find_elements(By.CLASS_NAME,
@@ -90,11 +104,10 @@ class AvitoParse(Parser):
     #     return price
 
 
-
-user_city = "Челябинск"
-user_request = "Машины"
+user_city = "Владивосток"
+user_request = "Телевизор"
 user_price_from = None
-user_price_to = None
+user_price_to = 20000
 
 p = AvitoParse(user_city)
 p.start()
