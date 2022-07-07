@@ -12,7 +12,7 @@ class YoulaParser(Parser):
     def __init__(self, city):
         self.option = webdriver.ChromeOptions()
         # self.option.add_argument('headless')
-        self.driver = webdriver.Chrome(options=self.option)
+        # self.driver = webdriver.Chrome(options=self.option)
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
         self.static_URL = 'https://youla.ru'
@@ -32,13 +32,19 @@ class YoulaParser(Parser):
         self.driver.find_element(By.XPATH, "//li[@role='button']//span[text()='Город']").click()
         time.sleep(1)
         towns = self.driver.find_elements(By.XPATH, "//div[@data-test-component='GeolocationModal']//div[@width=240]")
+        true_town = ''
+
         for i in towns:
             town = i.text
             if town == self.city:
                 i.click()
                 break
             else:
+                true_town = i.text
                 continue ##Здесь можно обработать ошибку на ввод города
+
+        if town != self.city:
+           raise Exception("Город не найден!") #Можно обработать ошибку любым удобным для Вас способом
 
     def get_ads(self, from_, to_, input_text):  # поиск товара, фильтры ввода цены, установка цены от, до.
         time.sleep(1)
@@ -89,12 +95,7 @@ class YoulaParser(Parser):
         result = []
 
         for name, price, link in zip(names, new_prices, new_links):
-            data = {}
-            if user_id != 0:
-                data['user_id'] = user_id
-            data['url'] = link
-            data['title'] = name
-            data['price'] = price
+            data = {'user_id':user_id, 'url': link, 'title': name, 'price': price}
             result.append(data)
 
         return result
@@ -108,6 +109,7 @@ class YoulaParser(Parser):
 #youla = YoulaParser(input_city)
 #youla.start()
 #youla.get_ads(from_, to_, input_text)
+#time.sleep(1)
 #to_json = youla.parse()
 # with open('itmes_Youla.json', 'w', encoding='windows-1251') as file:  # запись в json файл
 #     json.dump(to_json, file, indent=2, ensure_ascii=False)
