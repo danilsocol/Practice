@@ -99,11 +99,11 @@ class AvitoParse(Parser):
             mass_of_cards.append(self.parse_card(el, self.user_id))
         return mass_of_cards
 
-    # def check_price_change(self, url_ad):
-    #     self.driver.get(url_ad)
-    #     soup = BeautifulSoup(self.driver.page_source, features="lxml")
-    #     price = int(soup.find('span', {'itemprop': 'price'}).get_text().replace('\xa0', ''))
-    #     return price
+    def check_price_change(self, url_ad):
+        self.driver.get(url_ad)
+        soup = BeautifulSoup(self.driver.page_source, features="lxml")
+        price = int(soup.find('span', {'itemprop': 'price'}).get_text().replace('\xa0', ''))
+        return price
 
 
 #user_city = "Владивосток"

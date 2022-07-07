@@ -44,10 +44,25 @@ class YoulaParser(Parser):
                 continue ##Здесь можно обработать ошибку на ввод города
 
         if town != self.city:
-           raise Exception("Город не найден!") #Можно обработать ошибку любым удобным для Вас способом
+            try:
+                self.driver.find_element(By.XPATH,
+                                         "//div[@data-test-component='AutocompleteSearch']//button[@type='reset']").click()
+                self.driver.find_element(By.XPATH,
+                                         "//div[@data-test-component='AutocompleteSearch']//input[@id='downshift-1-input']").send_keys(
+                    self.city)
+                time.sleep(3)
+                self.driver.find_element(By.XPATH,
+                                         "//div[@data-test-component='GeolocationModal']//span[text()='Закрепить']/parent::button").click()
+            except:
+                self.driver.find_element(By.XPATH,
+                                         "//div[@data-test-component='AutocompleteSearch']//input[@id='downshift-1-input']").send_keys(
+                    self.city)
+                time.sleep(3)
+                self.driver.find_element(By.XPATH,
+                                         "//div[@data-test-component='GeolocationModal']//span[text()='Закрепить']/parent::button").click()
 
     def get_ads(self, from_, to_, input_text):  # поиск товара, фильтры ввода цены, установка цены от, до.
-        time.sleep(1)
+        time.sleep(3)
         self.driver.find_element(By.TAG_NAME, 'input').send_keys(f"{input_text}\n")
         if from_ is None and to_ is None:
             pass
@@ -95,7 +110,7 @@ class YoulaParser(Parser):
         result = []
 
         for name, price, link in zip(names, new_prices, new_links):
-            data = {'user_id':user_id, 'url': link, 'title': name, 'price': price}
+            data = {'user_id': user_id, 'url': link, 'title': name, 'price': price}
             result.append(data)
 
         return result
