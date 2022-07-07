@@ -2,6 +2,8 @@ import sqlite3
 import json
 import asyncio
 import datetime
+import avito_parser as pa
+import Youla_parser as yp
 
 class database_methods:
 
@@ -38,9 +40,9 @@ class database_methods:
 
 
     #TODO прием кол-во койнов и id чтоб изменить койны в бд
-    @staticmethod
-    def add_coins(user_id, coins_number):
-        pass
+    def add_coins(self, user_id, coins_number):
+        user = self.get_user_data(user_id)
+
 
 
     #Todo забрать 50 койнов у пользователя
@@ -104,3 +106,47 @@ class database_methods:
     @staticmethod
     def fill_buffer():
         pass
+
+    def get_avito_ads(self, outer_user_id, request, lower_bound=None, upper_bound=None):
+        user = self.get_user_data(user_id=outer_user_id)
+        p = pa.AvitoParse(user[1], outer_user_id)
+        p.start()
+        self.add_request(user[0], request)
+        data = p.parse(request, lower_bound, upper_bound)
+        data_list = json.dumps(data)
+        # data_list = json.dumps(data_list,
+        #                   sort_keys=False,
+        #                   indent=4,
+        #                   ensure_ascii=False,
+        #                   separators=(',', ': '))
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.executemany('INSERT INTO Buffer (user_id,url,title,price) '
+                        'VALUES (:user_id,:url,:title,:price)', json.loads(data_list))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return data_list
+
+
+    def get_youla_ads(self, outer_user_id, request, lower_bound=None, upper_bound=None):
+        user = self.get_user_data(user_id=outer_user_id)
+        y = yp.YoulaParser(user[1])
+        y.start()
+        y.get_ads(lower_bound, upper_bound, request)
+        data = y.parse(outer_user_id)
+        data_list = json.dumps(data)
+        # data_list = json.dumps(data_list,
+        #                   sort_keys=False,
+        #                   indent=4,
+        #                   ensure_ascii=False,
+        #                   separators=(',', ': '))
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.executemany('INSERT INTO Buffer (user_id,url,title,price) '
+                        'VALUES (:user_id, :url, :title, :price)', json.loads(data_list))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return data
+
