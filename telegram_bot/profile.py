@@ -4,4 +4,3 @@ class profile:
     reg_date = 0
     date_last_request = 0
     user_city = 0
-    coins = 0

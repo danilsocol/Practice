@@ -42,12 +42,9 @@ class profile_fitst_meet:
 
     async def get_city_prof_as(message):
         profile_fitst_meet.profile_dict[message.chat.id].user_city = message.text
-        profile_fitst_meet.profile_dict[message.chat.id].coins = 100
-        #database_methods.create_user(message.chat.id,
-      #              profile_fitst_meet.profile_dict[message.chat.id].name,
-      #              profile_fitst_meet.profile_dict[message.chat.id].surname,
-      #              profile_fitst_meet.profile_dict[message.chat.id].user_city,
-      #              profile_fitst_meet.profile_dict[message.chat.id].coins)
+        database_methods.create_user(message.chat.id,
+                   profile_fitst_meet.profile_dict[message.chat.id].user_city)
+        database_methods.add_coins(message.chat.id,100)
         bot.send_message(message.chat.id,
                          text="Спасибо, для того что бы вы смогли попробовать наш продукт мы зачислили вам 100 койнов, приятного пользования".format(
                              message.from_user),reply_markup=create_menus.markup_start_menu) # надо внести в бд

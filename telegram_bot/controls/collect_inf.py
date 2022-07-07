@@ -2,6 +2,7 @@ import asyncio
 import copy
 from settings import bot
 from telegram_bot.controls.create_menus import create_menus
+from telegram_bot.output import output_ad
 
 
 class collect_inf:
@@ -127,15 +128,14 @@ class collect_inf:
                 bot.register_next_step_handler(message, collect_inf.get_type_range)
 
 
-
     def get_range(message):
-        try:
+        # try:
             asyncio.run(collect_inf.get_range_as(message))
-        except:
-            bot.send_message(message.chat.id,
-                             text="Не верно введены данные, пожалуста повторите попытку".format(
-                                 message.from_user))
-            bot.register_next_step_handler(message, collect_inf.get_range)
+        # except:
+        #     bot.send_message(message.chat.id,
+        #                      text="Не верно введены данные, пожалуста повторите попытку".format(
+        #                          message.from_user))
+        #     bot.register_next_step_handler(message, collect_inf.get_range)
 
     async def get_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
@@ -149,3 +149,6 @@ class collect_inf:
                                   f"{collect_inf.user_dict[message.chat.id].city} "
                                   f"{collect_inf.user_dict[message.chat.id].sphere} ".format(
                                  message.from_user),reply_markup= create_menus.markup_menu_collect_inf)
+            output_ad.output(message,collect_inf.user_dict[message.chat.id])
+
+
