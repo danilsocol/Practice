@@ -8,7 +8,7 @@ class output_ad:
     def output(message, ad):
         count = 0
        # ad_avito = database_methods.get_avito_ads(message.chat.id, ad.sphere, ad.range[0], ad.range[1])
-        ad_youla = database_methods.get_youla_ads(message.chat.id, ad.sphere, ad.range[0], ad.range[1])#TODO добавить город
+        ad_youla = database_methods.get_youla_ads(message.chat.id, ad.city, ad.sphere, ad.range[0], ad.range[1])#TODO добавить город
         for i in range(0,5):
             bot.send_message(message.chat.id,
                          text=f"Название: {ad_youla[count]['title']}\n"

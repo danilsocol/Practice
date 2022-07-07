@@ -13,11 +13,14 @@ import Youla_parser as yp
 user = db.database_methods.get_user_data(user_id=25102003)
 #p = pa.AvitoParse(user[1])
 #p.start()
-request = 'очки'
+request = 'рубашка'
 lower_bound = None
 upper_bound = 10_000
 temp = db.database_methods()
-data2 = temp.get_youla_ads(25102003, 'Москва', request, lower_bound, upper_bound)
+
+#temp.add_fav(25102003, 'https://youla.ru/moskva/zhenskaya-odezhda/aksessuary/ochki-62c5d430678d15570c6ccffc')
+
+data2 = temp.get_avito_ads(25102003, 'Москва', request, lower_bound, upper_bound)
 for i in range(0, len(data2)):
     print(data2[i])
 #хз что возвращается, главное что в бд залезло!

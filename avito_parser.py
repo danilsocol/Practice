@@ -10,7 +10,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class AvitoParse(Parser):
-    def __init__(self, city):
+    def __init__(self, city, user_id):
         self.option = webdriver.ChromeOptions()
         # self.option.add_argument('headless')
         self.capa = DesiredCapabilities.CHROME
@@ -18,6 +18,7 @@ class AvitoParse(Parser):
         self.driver = webdriver.Chrome(desired_capabilities=self.capa, options=self.option)
         self.driver.maximize_window()
         self.city = city
+        self.user_id = user_id
 
     def __del__(self):
         self.driver.close()
@@ -82,8 +83,9 @@ class AvitoParse(Parser):
         return links_on_page
 
     @staticmethod
-    def parse_card(card_element):
+    def parse_card(card_element, user_id):
         card = dict()
+        card['user_id'] = user_id
         card['url'] = card_element.find_element(By.TAG_NAME, "a").get_attribute('href')  # ссылка
         card['title'] = card_element.find_element(By.TAG_NAME, "h3").text  # название
         card['price'] = card_element.find_elements(By.TAG_NAME, "meta")[1].get_attribute('content')  # цена
@@ -94,7 +96,7 @@ class AvitoParse(Parser):
     def parse(self, request, price_from, price_to):
         mass_of_cards = []
         for el in self.get_ads(request, price_from, price_to):
-            mass_of_cards.append(self.parse_card(el))
+            mass_of_cards.append(self.parse_card(el, self.user_id))
         return mass_of_cards
 
     # def check_price_change(self, url_ad):
@@ -104,14 +106,14 @@ class AvitoParse(Parser):
     #     return price
 
 
-user_city = "Владивосток"
-user_request = "Телевизор"
-user_price_from = None
-user_price_to = 20000
+#user_city = "Владивосток"
+#user_request = "Телевизор"
+#user_price_from = None
+#user_price_to = 20000
 
-p = AvitoParse(user_city)
-p.start()
-to_json = p.parse(user_request, user_price_from, user_price_to)
+# p = AvitoParse(user_city)
+# p.start()
+# to_json = p.parse(user_request, user_price_from, user_price_to)
 # with open('itmes_Avito.json', 'w', encoding='windows-1251') as file: #запись в json файл
 #     json.dump(to_json, file, indent=2, ensure_ascii=False)
 

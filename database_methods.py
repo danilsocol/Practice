@@ -92,7 +92,9 @@ class database_methods:
     def get_requests_list():
       return list
 
-    def add_request(self, outer_user, request):
+    #добавл€ем в таблицу запросов
+    @staticmethod
+    def add_request(outer_user, request):
         #user = self.get_user_data(outer_user)
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
@@ -104,13 +106,14 @@ class database_methods:
         cur.close()
         conn.close()
 
-
-    def get_avito_ads(self,  outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    #объ€влени€ с авито
+    @staticmethod
+    def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
         p.start()
-        self.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request)
         data = p.parse(request, lower_bound, upper_bound)
         data_list = json.dumps(data)
         # data_list = json.dumps(data_list,
@@ -125,15 +128,16 @@ class database_methods:
         conn.commit()
         cur.close()
         conn.close()
-        return data_list
+        return data
 
-
-    def get_youla_ads(self, outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    #получаем объ€влени€ с юлы
+    @staticmethod
+    def get_youla_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
         y = yp.YoulaParser(city)
         y.start()
-        self.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request)
         y.get_ads(lower_bound, upper_bound, request)
         data = y.parse(outer_user_id)
         data_list = json.dumps(data)
@@ -151,3 +155,20 @@ class database_methods:
         conn.close()
         return data
 
+    #добавить в избранное по ссылке
+    @staticmethod
+    def add_fav(outer_user_id, url):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT price FROM Buffer
+            WHERE url = :url
+            """, {'url': url})
+        price = cur.fetchone()[0]
+        cur.execute("""
+            INSERT INTO Favourites (user_id,url,price) 
+            VALUES (:user_id, :url, :price)
+            """, {'user_id': outer_user_id, 'url': url, 'price': price})
+        conn.commit()
+        cur.close()
+        conn.close()
