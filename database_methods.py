@@ -92,6 +92,7 @@ class database_methods:
     def get_requests_list():
       return list
 
+    #добавл€ем в таблицу запросов
     def add_request(self, outer_user, request):
         #user = self.get_user_data(outer_user)
         conn = sqlite3.connect('BuyBot.db')
@@ -104,7 +105,7 @@ class database_methods:
         cur.close()
         conn.close()
 
-
+    #объ€влени€ с авито
     def get_avito_ads(self,  outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
@@ -127,7 +128,7 @@ class database_methods:
         conn.close()
         return data_list
 
-
+    #получаем объ€влени€ с юлы
     def get_youla_ads(self, outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
@@ -151,3 +152,19 @@ class database_methods:
         conn.close()
         return data
 
+    #добавить в избранное по ссылке
+    def add_fav(self, outer_user_id, url):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT price FROM Buffer
+            WHERE url = :url
+            """, {'url': url})
+        price = cur.fetchone()[0]
+        cur.execute("""
+            INSERT INTO Favourites (user_id,url,price) 
+            VALUES (:user_id, :url, :price)
+            """, {'user_id': outer_user_id, 'url': url, 'price': price})
+        conn.commit()
+        cur.close()
+        conn.close()
