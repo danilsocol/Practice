@@ -46,16 +46,8 @@ class database_methods:
 
 
     #Todo забрать 50 койнов у пользователя
-    #Todo выдать город пользователя
 
-    #получение объявлений с авито
-    #async def get_avito_list(user_id, request, lower_bound, upper_bound):
-     #   #TODO: получить город
-      #  p = pa.AvitoParse(None)
-       # p.avito_start()
-        #data = p.parse_20_cards(request, lower_bound, upper_bound)
-        #for i in range(0, len(data)):
-         #   print(data[i])
+
 
     #проверить есть ли id чата в бд - сделано!!!!
     @staticmethod
@@ -68,6 +60,7 @@ class database_methods:
         """, {'outer': outer_user_id})
         result = cur.fetchone()
         cur.close()
+        conn.close()
         return result[0] > 0    #bool
 
         #TODO: Выдать список новых пользователей зарегистрированных за промежуток времени
@@ -99,19 +92,25 @@ class database_methods:
     def get_requests_list():
       return list
 
-    @staticmethod
-    def add_request(user, request): #bounds?
-        pass
+    def add_request(self, outer_user, request):
+        #user = self.get_user_data(outer_user)
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        INSERT INTO Requests(user_id, text, date_time) VALUES (:user_id, :text, datetime('now'))
+        """, {'user_id': outer_user, 'text': request}
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
 
-    @staticmethod
-    def fill_buffer():
-        pass
 
-    def get_avito_ads(self, outer_user_id, request, lower_bound=None, upper_bound=None):
-        user = self.get_user_data(user_id=outer_user_id)
-        p = pa.AvitoParse(user[1], outer_user_id)
+    def get_avito_ads(self,  outer_user_id, city, request, lower_bound=None, upper_bound=None):
+        #user = self.get_user_data(user_id=outer_user_id)
+        #p = pa.AvitoParse(user[1], outer_user_id)
+        p = pa.AvitoParse(city, outer_user_id)
         p.start()
-        self.add_request(user[0], request)
+        self.add_request(outer_user_id, request)
         data = p.parse(request, lower_bound, upper_bound)
         data_list = json.dumps(data)
         # data_list = json.dumps(data_list,
@@ -129,10 +128,12 @@ class database_methods:
         return data_list
 
 
-    def get_youla_ads(self, outer_user_id, request, lower_bound=None, upper_bound=None):
-        user = self.get_user_data(user_id=outer_user_id)
-        y = yp.YoulaParser(user[1])
+    def get_youla_ads(self, outer_user_id, city, request, lower_bound=None, upper_bound=None):
+        #user = self.get_user_data(user_id=outer_user_id)
+        #y = yp.YoulaParser(user[1])
+        y = yp.YoulaParser(city)
         y.start()
+        self.add_request(outer_user_id, request)
         y.get_ads(lower_bound, upper_bound, request)
         data = y.parse(outer_user_id)
         data_list = json.dumps(data)

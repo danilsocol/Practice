@@ -13,11 +13,11 @@ import Youla_parser as yp
 user = db.database_methods.get_user_data(user_id=25102003)
 #p = pa.AvitoParse(user[1])
 #p.start()
-request = 'колонка'
-lower_bound = 2_000
+request = 'очки'
+lower_bound = None
 upper_bound = 10_000
 temp = db.database_methods()
-data2 = temp.get_youla_ads(25102003, request, lower_bound, upper_bound)
+data2 = temp.get_youla_ads(25102003, 'Москва', request, lower_bound, upper_bound)
 for i in range(0, len(data2)):
     print(data2[i])
 #хз что возвращается, главное что в бд залезло!
