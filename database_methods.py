@@ -39,15 +39,22 @@ class database_methods:
         return result
 
 
-    #TODO прием кол-во койнов и id чтоб изменить койны в бд
-    def add_coins(self, user_id, coins_number):
-        user = self.get_user_data(user_id)
-
-
-
-    #Todo забрать 50 койнов у пользовател€
-
-
+    #прием кол-во койнов и id чтоб изменить койны в бд
+    #чтобы отн€ть, вводим отрицательное число
+    #если не передавать число, вычитаютс€ 50
+    @staticmethod
+    def change_coins(user_id, coins_count=-50):
+        user = database_methods.get_user_data(user_id)
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        UPDATE Users 
+        SET (coins) = (coins+:add)
+        WHERE user_id = :user_id
+        """, {'add': coins_count, 'user_id': user_id})
+        conn.commit()
+        cur.close()
+        conn.close()
 
     #проверить есть ли id чата в бд - сделано!!!!
     @staticmethod
@@ -63,24 +70,32 @@ class database_methods:
         conn.close()
         return result[0] > 0    #bool
 
-        #TODO: ¬ыдать список новых пользователей зарегистрированных за промежуток времени
-        #вернуть словарь: день - количество человек
-        #потом добавить масштаб (день-недел€)
+    #TODO: ¬ыдать список новых пользователей зарегистрированных за промежуток времени
+    #вернуть словарь: день - количество человек
+    #потом добавить масштаб (день-недел€)
 
+        # ¬ыдать количество новых пользователей зарегистрированных за промежуток времени
+        # вернуть словарь: день (в виде даты) - количество человек
+        # потом добавить масштаб (день-недел€) - не сделано
     @staticmethod
-    #def get_list_rookie(start_date, end_date=datetime.date.now()):
-     #   conn = sqlite3.connect('BuyBot.db')
-      #  cur = conn.cursor()
-       # start_date = datetime.date.strptime(start_date)
-        #end_date = datetime.date.strptime(end_date)
-        #days_count = datetime.timedelta(end_date - start_date)
-        #cur.execute("""
-          #  SELECT * FROM Users
-           # WHERE registration_date =:outer
-            #""")
-        # result = cur.fetchall()
-        # cur.close()
-        # return #list
+    def get_list_rookie(start_date, end_date=None):
+        if end_date == None:
+            end_date = datetime.date.today()
+        days_count = (end_date - start_date).days
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        result = {}
+        for i in range(0, days_count + 1):
+            key = start_date + datetime.timedelta(days=i)
+            cur.execute("""
+            SELECT COUNT(*) FROM Users
+            WHERE registration_date =:outer
+            """, {'outer': key})
+            temp = cur.fetchone()
+            result[key] = temp[0]
+        cur.close()
+        conn.close()
+        return result  # list
 
     #TODO: ¬ыдать список активных за промежуток времени
     @staticmethod
@@ -93,7 +108,8 @@ class database_methods:
       return list
 
     #добавл€ем в таблицу запросов
-    def add_request(self, outer_user, request):
+    @staticmethod
+    def add_request(outer_user, request):
         #user = self.get_user_data(outer_user)
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
@@ -106,12 +122,13 @@ class database_methods:
         conn.close()
 
     #объ€влени€ с авито
-    def get_avito_ads(self,  outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    @staticmethod
+    def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
         p.start()
-        self.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request)
         data = p.parse(request, lower_bound, upper_bound)
         data_list = json.dumps(data)
         # data_list = json.dumps(data_list,
@@ -126,15 +143,16 @@ class database_methods:
         conn.commit()
         cur.close()
         conn.close()
-        return data_list
+        return data
 
     #получаем объ€влени€ с юлы
-    def get_youla_ads(self, outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    @staticmethod
+    def get_youla_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
         y = yp.YoulaParser(city)
         y.start()
-        self.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request)
         y.get_ads(lower_bound, upper_bound, request)
         data = y.parse(outer_user_id)
         data_list = json.dumps(data)
@@ -153,7 +171,8 @@ class database_methods:
         return data
 
     #добавить в избранное по ссылке
-    def add_fav(self, outer_user_id, url):
+    @staticmethod
+    def add_fav(outer_user_id, url):
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
