@@ -1,5 +1,7 @@
 import asyncio
 import copy
+
+from database_methods import database_methods
 from settings import bot
 from telegram_bot.controls.create_menus import create_menus
 from telegram_bot.output import output_ad
@@ -142,7 +144,8 @@ class collect_inf:
             await collect_inf.collecting_inf(message)
         else:
             collect_inf.user_dict[message.chat.id].step = 0
-            await collect_inf.processing_range_str(message.text, message)
+            await collect_inf.processing_range_str(message.text, message) #TODO Изменить отправку запроса для истории
+            database_methods.add_request(message.chat.id,collect_inf.user_dict[message.chat.id].sphere)
             bot.send_message(message.chat.id,
                              text=f"Спасибо за подробности {collect_inf.user_dict[message.chat.id].type_range} "
                                   f"{collect_inf.user_dict[message.chat.id].range} "

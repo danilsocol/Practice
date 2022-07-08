@@ -77,7 +77,7 @@ class database_methods:
         # Выдать количество новых пользователей зарегистрированных за промежуток времени
         # вернуть словарь: день (в виде даты) - количество человек
         # потом добавить масштаб (день-неделя) - не сделано
-    @staticmethod
+    @staticmethod #TODO такой же метод только вернуть месяцами
     def get_list_rookie(start_date, end_date=None):
         if end_date == None:
             end_date = datetime.date.today()
@@ -170,16 +170,18 @@ class database_methods:
         conn.close()
         return data
 
-    #добавить в избранное по ссылке
+    # добавить в избранное по ссылке
     @staticmethod
-    def add_fav(outer_user_id, url):
+    def add_fav(outer_user_id, part_url):
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
-            SELECT price FROM Buffer
-            WHERE url = :url
-            """, {'url': url})
-        price = cur.fetchone()[0]
+            SELECT price, url FROM Buffer
+            WHERE instr(url, :url) > 0 
+            """, {'url': part_url})
+        temp = cur.fetchone()
+        price = temp[0]
+        url = temp[1]
         cur.execute("""
             INSERT INTO Favourites (user_id,url,price) 
             VALUES (:user_id, :url, :price)

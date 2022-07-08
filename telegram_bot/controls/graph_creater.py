@@ -15,8 +15,13 @@ class graph_creater:
         x = [f'{list_x[i]}'for i in range(step)] # кол-во столбцов , так же подпись снизу
         y = mass #
         ax.bar(x, y)
+        plt.xlabel('Time', fontsize=14)
+        plt.ylabel('Count', fontsize=14)
+        for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+            label.set_fontsize(4)
 
-        plt.show()
+        plt.savefig('graph', dpi= 1000)
+        #plt.show()
 
     def week_day(self):
         today = datetime.date.today()
@@ -33,7 +38,7 @@ class graph_creater:
         res = pd.date_range(
             min(today, end_date),
             max(today, end_date)
-        ).strftime('%d/%m').tolist()
+        ).strftime('%d.%m').tolist()
         return res
 
     def year(self):
@@ -48,4 +53,4 @@ class graph_creater:
 
         return month
 
-#graph_creater.graph_creat(20,[10,5,6,8,18,7,5,8,6,7,1,8,7,3,5,47,9,2,7,6],graph_creater.month(0))
+# graph_creater.graph_creat(20,[10,5,6,8,18,7,5,8,6,7,1,8,7,3,5,47,9,2,7,6],graph_creater.month(0))
