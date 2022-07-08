@@ -44,6 +44,7 @@ class AvitoParse(Parser):
                 self.driver.find_element(By.XPATH, "//div[@class='popup-buttons-WICnh']//button").click()
         except NoSuchElementException:
             self.driver.refresh()
+            time.sleep(10)
             self.driver.find_element(By.CLASS_NAME, "main-locationWrapper-R8itV").click()
             # вписываем нужный город, который передал пользователь
             self.driver.find_element(By.CLASS_NAME, "suggest-input-rORJM").send_keys(f"{self.city}")
@@ -51,7 +52,7 @@ class AvitoParse(Parser):
     def get_ads(self, request, price_from: None, price_to: None):
         time.sleep(2)
         self.driver.find_element(By.CLASS_NAME, "input-input-Zpzc1").send_keys(f"{request}\n")
-        time.sleep(5)
+        time.sleep(10)
         input_prices = self.driver.find_element(By.CLASS_NAME, "styles-root-vSsLn")
 
         if price_from is None and price_to is None:

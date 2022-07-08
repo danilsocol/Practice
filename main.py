@@ -45,4 +45,9 @@ class main:
             asyncio.run(user_text_editor.user_editor(message))
 
 
+    @bot.callback_query_handler(func=lambda call: True)
+    def handle(call):
+        bot.edit_message_reply_markup(chat_id = call.message.chat.id, message_id =call.message.id, reply_markup = None)
+        database_methods.add_fav(call.message.chat.id, str(call.data))
+
     bot.polling()

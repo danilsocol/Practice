@@ -24,13 +24,15 @@ class YoulaParser(Parser):
     def start(self):  # открытие юлы, вписывание города (доделывается)
         try:
             self.driver.get(self.static_URL)
-            time.sleep(1)
+            time.sleep(10)
+            self.driver.find_element(By.TAG_NAME, 'button')
         except NoSuchElementException:
             self.driver.refresh()
+
         self.driver.find_element(By.TAG_NAME, 'button').click()
-        time.sleep(1)
+        time.sleep(2)
         self.driver.find_element(By.XPATH, "//li[@role='button']//span[text()='Город']").click()
-        time.sleep(1)
+        time.sleep(2)
         towns = self.driver.find_elements(By.XPATH, "//div[@data-test-component='GeolocationModal']//div[@width=240]")
         true_town = ''
 
@@ -62,8 +64,9 @@ class YoulaParser(Parser):
                                          "//div[@data-test-component='GeolocationModal']//span[text()='Закрепить']/parent::button").click()
 
     def get_ads(self, from_, to_, input_text):  # поиск товара, фильтры ввода цены, установка цены от, до.
-        time.sleep(3)
+        time.sleep(5)
         self.driver.find_element(By.TAG_NAME, 'input').send_keys(f"{input_text}\n")
+        time.sleep(3)
         if from_ is None and to_ is None:
             pass
         elif from_ is None:

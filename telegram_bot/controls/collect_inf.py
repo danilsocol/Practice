@@ -149,6 +149,6 @@ class collect_inf:
                                   f"{collect_inf.user_dict[message.chat.id].city} "
                                   f"{collect_inf.user_dict[message.chat.id].sphere} ".format(
                                  message.from_user),reply_markup= create_menus.markup_menu_collect_inf)
-            output_ad.output(message,collect_inf.user_dict[message.chat.id])
+            output_ad.down_ad(message,collect_inf.user_dict[message.chat.id])
 
 
