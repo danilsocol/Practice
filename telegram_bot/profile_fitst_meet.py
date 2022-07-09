@@ -44,7 +44,7 @@ class profile_fitst_meet:
         profile_fitst_meet.profile_dict[message.chat.id].user_city = message.text
         database_methods.create_user(message.chat.id,
                    profile_fitst_meet.profile_dict[message.chat.id].user_city)
-        database_methods.add_coins(message.chat.id,100)
+        database_methods.change_coins(message.chat.id,100)
         bot.send_message(message.chat.id,
                          text="Спасибо, для того что бы вы смогли попробовать наш продукт мы зачислили вам 100 койнов, приятного пользования".format(
                              message.from_user),reply_markup=create_menus.markup_start_menu) # надо внести в бд

@@ -4,6 +4,11 @@ import asyncio
 import datetime
 import avito_parser as pa
 import Youla_parser as yp
+from dateutil.relativedelta import relativedelta
+
+from settings import bot
+from telegram_bot.controls.create_menus import create_menus
+
 
 class database_methods:
 
@@ -13,7 +18,7 @@ class database_methods:
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
-        SELECT strftime('%d.%m.%Y %H:%M', DATETIME('now'))
+        SELECT strftime('%Y-%m-%d', DATETIME('now'))
         """)
         time = str(cur.fetchone()[0])
         cur.execute("""
@@ -70,22 +75,18 @@ class database_methods:
         conn.close()
         return result[0] > 0    #bool
 
-    #TODO: Выдать список новых пользователей зарегистрированных за промежуток времени
-    #вернуть словарь: день - количество человек
-    #потом добавить масштаб (день-неделя)
-
-        # Выдать количество новых пользователей зарегистрированных за промежуток времени
-        # вернуть словарь: день (в виде даты) - количество человек
-        # потом добавить масштаб (день-неделя) - не сделано
-    @staticmethod #TODO такой же метод только вернуть месяцами
+    #Выдать количество новых пользователей зарегистрированных за промежуток времени
+    #вернуть словарь: день (в виде даты) - количество человек
+    #потом добавить масштаб (день-неделя) - не сделано
+    @staticmethod
     def get_list_rookie(start_date, end_date=None):
         if end_date == None:
             end_date = datetime.date.today()
-        days_count = (end_date - start_date).days
+        days_count = (end_date-start_date).days
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         result = {}
-        for i in range(0, days_count + 1):
+        for i in range(0, days_count+1):
             key = start_date + datetime.timedelta(days=i)
             cur.execute("""
             SELECT COUNT(*) FROM Users
@@ -95,17 +96,69 @@ class database_methods:
             result[key] = temp[0]
         cur.close()
         conn.close()
-        return result  # list
+        return result #list
 
-    #TODO: Выдать список активных за промежуток времени
-    @staticmethod
-    def get_active_users(date):
-        return list
 
-    #TODO: Кол-во запросов за промежуток времени
+    #в параметрах любой день в нужном месяце и количество следующих месяцев
     @staticmethod
-    def get_requests_list():
-      return list
+    def get_list_rookie_months(start_date, months_count):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        result = {}
+        for i in range(0, months_count+1):
+            key = start_date + relativedelta(months=i)
+            cur.execute("""
+            SELECT COUNT(*) FROM Users
+            WHERE 
+            strftime('%Y-%m', registration_date) = strftime('%Y-%m', :outer)
+            """, {'outer': key})
+            temp = cur.fetchone()
+            result[key] = temp[0]
+        cur.close()
+        conn.close()
+        return result #list
+
+    #Выдать список активных за промежуток времени
+    @staticmethod
+    def get_active_users(start_date, end_date=None):
+        if end_date == None:
+            end_date = datetime.date.today()
+        days_count = (end_date-start_date).days
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        result = 0
+        for i in range(0, days_count+1):
+            key = start_date + datetime.timedelta(days=i)
+            cur.execute("""
+            SELECT COUNT(*) FROM Users
+            WHERE last_activity =:outer
+            """, {'outer': key})
+            temp = cur.fetchone()
+            result += temp[0]
+        cur.close()
+        conn.close()
+        return result
+
+    #Кол-во запросов за промежуток времени
+    @staticmethod
+    def get_requests_count(start_date, end_date=None):
+        if end_date == None:
+            end_date = datetime.date.today()
+        days_count = (end_date - start_date).days
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        result = 0
+        for i in range(0, days_count + 1):
+            key = start_date + datetime.timedelta(days=i)
+            cur.execute("""
+          SELECT COUNT(*) FROM Requests
+          WHERE strftime('%Y-%m-%d', date_time) =:outer
+          """, {'outer': key})
+            temp = cur.fetchone()
+            result += temp[0]
+        cur.close()
+        conn.close()
+        return result
 
     #добавляем в таблицу запросов
     @staticmethod
@@ -123,7 +176,7 @@ class database_methods:
 
     #объявления с авито
     @staticmethod
-    def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    def get_avito_ads(outer_user_id, city, request,lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
@@ -147,12 +200,21 @@ class database_methods:
 
     #получаем объявления с юлы
     @staticmethod
-    def get_youla_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    def get_youla_ads(outer_user_id, city, request,str, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
+
+        bot.send_message(outer_user_id, text=str[0])
+
         y = yp.YoulaParser(city)
+
+        bot.send_message(outer_user_id, text=str[1])
+
         y.start()
         database_methods.add_request(outer_user_id, request)
+
+        bot.send_message(outer_user_id, text=str[2])
+
         y.get_ads(lower_bound, upper_bound, request)
         data = y.parse(outer_user_id)
         data_list = json.dumps(data)
@@ -170,7 +232,11 @@ class database_methods:
         conn.close()
         return data
 
-    # добавить в избранное по ссылке
+#Открываю браузер
+#Ищу объявления по запросу
+#Собираю данные
+
+    #добавить в избранное по ссылке
     @staticmethod
     def add_fav(outer_user_id, part_url):
         conn = sqlite3.connect('BuyBot.db')
@@ -187,5 +253,41 @@ class database_methods:
             VALUES (:user_id, :url, :price)
             """, {'user_id': outer_user_id, 'url': url, 'price': price})
         conn.commit()
+        cur.close()
+        conn.close()
+
+    @staticmethod
+    def get_fav(user_id):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM Favourites
+            WHERE :user_id = user_id
+            """, {'user_id': user_id})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result
+
+    @staticmethod
+    def update_all_favorite_prices():
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT url FROM Favourites
+        """)
+        urls = cur.fetchall()
+
+        for url in urls:
+            if str(url[0]).find('avito.ru') > 0:
+                avito = pa.AvitoParse()
+                new_price = avito.check_price_change(url[0])
+                cur.execute("""
+                UPDATE Favourites 
+                SET (price) = (:new_price)
+                """, {'new_price': new_price})
+                conn.commit()
+            else:
+                pass
         cur.close()
         conn.close()

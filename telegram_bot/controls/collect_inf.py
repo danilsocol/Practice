@@ -1,6 +1,8 @@
 import asyncio
 import copy
 
+from null import Null
+
 from database_methods import database_methods
 from settings import bot
 from telegram_bot.controls.create_menus import create_menus
@@ -48,12 +50,17 @@ class collect_inf:
 
 
     async def processing_range_str(text,message):
-        arr = []
+        collect_inf.user_dict[message.chat.id].range = [Null,Null]
         str = text.split(" ")
-        arr.append(int(str[1]))
-        if (len(str) > 2):
-            arr.append(int(str[3]))
-        collect_inf.user_dict[message.chat.id].range = copy.deepcopy(arr)
+
+        if(collect_inf.user_dict[message.chat.id].type_range == "1"):
+            collect_inf.user_dict[message.chat.id].range[0] = int(str[1])
+            collect_inf.user_dict[message.chat.id].range[1] = int(str[3])
+        elif (collect_inf.user_dict[message.chat.id].type_range == "2"):
+            collect_inf.user_dict[message.chat.id].range[0] = int(str[1])
+        elif (collect_inf.user_dict[message.chat.id].type_range == "3"):
+            collect_inf.user_dict[message.chat.id].range[1] = int(str[3])
+
 
 
     def get_city(message):
@@ -65,7 +72,7 @@ class collect_inf:
             #TODO Забрать из бд город пользователя и запустить get_city_as(message)
             bot.register_next_step_handler(message, collect_inf.get_sphere)
             collect_inf.user_dict[message.chat.id].step += 1
-            collect_inf.user_dict[message.chat.id].city = message.text  # TODO изменить
+            collect_inf.user_dict[message.chat.id].city = database_methods.get_user_data(message.chat.id)[1]
             bot.send_message(message.chat.id,
                              text="Что вы собираетесь искать?".format(
                                  message.from_user), reply_markup=create_menus.markup_menu_collect_inf)
@@ -77,6 +84,7 @@ class collect_inf:
 
         else:
             bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+            bot.register_next_step_handler(message, collect_inf.question_search_your_city)
 
 
     async def get_city_as(message):
@@ -132,7 +140,8 @@ class collect_inf:
 
     def get_range(message):
         # try:
-            asyncio.run(collect_inf.get_range_as(message))
+           asyncio.run(collect_inf.get_range_as(message))
+
         # except:
         #     bot.send_message(message.chat.id,
         #                      text="Не верно введены данные, пожалуста повторите попытку".format(
@@ -142,9 +151,11 @@ class collect_inf:
     async def get_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
             await collect_inf.collecting_inf(message)
+
         else:
             collect_inf.user_dict[message.chat.id].step = 0
             await collect_inf.processing_range_str(message.text, message) #TODO Изменить отправку запроса для истории
+            collect_inf.processing_range_str(message.text, message)  # TODO Изменить отправку запроса для истории
             database_methods.add_request(message.chat.id,collect_inf.user_dict[message.chat.id].sphere)
             bot.send_message(message.chat.id,
                              text=f"Спасибо за подробности {collect_inf.user_dict[message.chat.id].type_range} "

@@ -8,6 +8,7 @@ from telegram_bot.controls.user_text_editor import user_text_editor
 from telegram_bot.controls.create_menus import create_menus
 from database_methods import database_methods
 
+
 class main:
 
 
@@ -48,6 +49,9 @@ class main:
     @bot.callback_query_handler(func=lambda call: True)
     def handle(call):
         bot.edit_message_reply_markup(chat_id = call.message.chat.id, message_id =call.message.id, reply_markup = None)
-        database_methods.add_fav(call.message.chat.id, str(call.data))
+        if(str(call.data).split()[0] == "add"):
+            database_methods.add_fav(call.message.chat.id, str(call.data).split()[1])
+        else:
+            pass#TODO добавить удаление из избраного
 
     bot.polling()

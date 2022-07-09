@@ -1,10 +1,13 @@
 import asyncio
 import datetime
+import os
+import time
+from dateutil.relativedelta import relativedelta
 import settings
 from database_methods import database_methods
 from settings import bot
-from telegram_bot.controls import graph_creater
 from telegram_bot.controls.create_menus import create_menus
+from telegram_bot.controls.graph_creater import graph_creater
 
 
 class adm_text_editor:
@@ -47,43 +50,96 @@ class adm_text_editor:
     def set_user_and_coins(message):
         id_user_and_coins = message.text.split()
         database_methods.change_coins(id_user_and_coins[0],id_user_and_coins[1])
-
+        bot.send_message(message.chat.id,
+                         text=f"Койны были добавлены".format(
+                             message.from_user), reply_markup=create_menus.markup_adm_menu)
 
     def editor_interval(message):
         asyncio.run(adm_text_editor.editor_interval_as(message))
 
 
-    async def editor_interval_as(message):
-        # if (adm_text_editor.adm_dict[message.chat.id] == "act"):
-        #     if(message.text == "Неделя"):
-        #         graph_creater.graph_creat(7,,graph_creater.week_day())
-        #     elif(message.text == "Месяц"):
-        #         graph_creater.graph_creat(30,,graph_creater.month())
-        #     elif(message.text == "Год"):
-        #         graph_creater.graph_creat(12,,graph_creater.year())
-        #
-        # elif( adm_text_editor.adm_dict[message.chat.id] == "req"):
-        #     if (message.text == "Неделя"):
-        #         graph_creater.graph_creat(7, , graph_creater.week_day())
-        #     elif (message.text == "Месяц"):
-        #         graph_creater.graph_creat(30,, graph_creater.month())
-        #     elif (message.text == "Год"):
-        #         graph_creater.graph_creat(12,, graph_creater.year())
-
-        # elif (adm_text_editor.adm_dictp[message.chat.id] == "rook"):
-        if (adm_text_editor.adm_dict[message.chat.id] == "rook"): #TODO проверить с тестовыми данными
+    async def editor_interval_as(message): #TODO изменить год
+        if (adm_text_editor.adm_dict[message.chat.id] == "act"):
             if (message.text == "Неделя"):
-                rook = database_methods.get_list_rookie(datetime.date.today(),
-                                                 datetime.date.today() - datetime.timedelta(days=7))
-                graph_creater.graph_creat(7, rook, graph_creater.week_day())
+                act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=6),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+
             elif (message.text == "Месяц"):
-                rook = database_methods.get_list_rookie(datetime.date.today(),
-                                                        datetime.date.today() - datetime.timedelta(days=30))
-                graph_creater.graph_creat(30,rook, graph_creater.month())
+                act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=29),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
             elif (message.text == "Год"):
-                rook = database_methods.get_list_rookie(datetime.date.today(),
-                                                        datetime.date.today() - datetime.timedelta(days=365))
-                graph_creater.graph_creat(12,rook, graph_creater.year())
+                act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=364),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+        elif( adm_text_editor.adm_dict[message.chat.id] == "req"):
+            if (message.text == "Неделя"):
+                req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=6),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+
+            elif (message.text == "Месяц"):
+                req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=29),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+            elif (message.text == "Год"):
+                req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=364),
+                                                        datetime.date.today())
+                bot.send_message(message.chat.id,
+                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+        elif (adm_text_editor.adm_dict[message.chat.id] == "rook"):
+            if (message.text == "Неделя"):
+                rook = database_methods.get_list_rookie(datetime.date.today() - datetime.timedelta(days=6),datetime.date.today())
+                graph_creater.graph_creat(7, graph_creater.pull_day(7,rook), graph_creater.week_day(),message.chat.id)
+                img = open(f"graph{message.chat.id}.png",'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
+                bot.send_message(message.chat.id,
+                                 text="Что то ещё?".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+            elif (message.text == "Месяц"):
+                rook = database_methods.get_list_rookie(datetime.date.today() - datetime.timedelta(days=29), datetime.date.today())
+                graph_creater.graph_creat(30,graph_creater.pull_day(30,rook), graph_creater.month(),message.chat.id)
+                img = open(f"graph{message.chat.id}.png",'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
+                bot.send_message(message.chat.id,
+                                 text="Что то ещё?".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
+
+            elif (message.text == "Год"):
+                rook = database_methods.get_list_rookie_months(datetime.date.today() - relativedelta(months = 11),11)
+                graph_creater.graph_creat(12,graph_creater.pull_month(12,rook), graph_creater.year(),message.chat.id)
+                img = open(f"graph{message.chat.id}.png",'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
+                bot.send_message(message.chat.id,
+                                 text="Что то ещё?".format(
+                                     message.from_user), reply_markup=create_menus.markup_adm_menu)
 
         else:
             bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+
+
