@@ -48,8 +48,9 @@ class create_menus:
         btn_number_of_requests = types.KeyboardButton("Просмотреть кол-во запросов")
         btn_number_of_new_users = types.KeyboardButton("Просмотреть кол-во новых пользователей")
         btn_add_user_coins = types.KeyboardButton("Добавить пользователю койны")
+        btn_upd_fav = types.KeyboardButton("Обновить избранное")
         btn_normal_mode = types.KeyboardButton("Перейти в режим пользователя")
-        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins,  btn_normal_mode)
+        markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins, btn_upd_fav, btn_normal_mode)
 
 
     async def create_menu_parse_or_bd(markup):

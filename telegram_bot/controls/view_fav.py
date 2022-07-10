@@ -24,7 +24,8 @@ class view_fav:
                 break
             markup = types.InlineKeyboardMarkup()
             btn_del_favourit = types.InlineKeyboardButton(text="Удалить из избрангого", callback_data=f"del {view_fav.list_fav[i][2][-10::]}")
-            markup.add(btn_del_favourit)
+            btn_view_graph = types.InlineKeyboardButton(text="Посмотреть изменение цены", callback_data=f"graph {view_fav.list_fav[i][2][-10::]}")
+            markup.add(btn_del_favourit,btn_view_graph)
             bot.send_message(message.chat.id,
                          text=f"{view_fav.list_fav[i][2]}".format(
                              message.from_user), reply_markup=markup)

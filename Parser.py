@@ -20,3 +20,7 @@ class Parser(ABC):
     @abstractmethod
     def parse(self):
         pass
+
+    @abstractmethod
+    def change_price(self):
+        pass

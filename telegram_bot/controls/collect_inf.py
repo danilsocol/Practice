@@ -10,7 +10,7 @@ from telegram_bot.output import output_ad
 
 
 class collect_inf:
-    user_dict = dict()
+    user_dict = dict() #TODO создание экземпляра класса
 
     async def collecting_inf(message):
 
@@ -59,7 +59,7 @@ class collect_inf:
         elif (collect_inf.user_dict[message.chat.id].type_range == "2"):
             collect_inf.user_dict[message.chat.id].range[0] = int(str[1])
         elif (collect_inf.user_dict[message.chat.id].type_range == "3"):
-            collect_inf.user_dict[message.chat.id].range[1] = int(str[3])
+            collect_inf.user_dict[message.chat.id].range[1] = int(str[1])
 
 
 

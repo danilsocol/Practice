@@ -11,12 +11,10 @@ from Parser import Parser
 class YoulaParser(Parser):
     def __init__(self, city):
         self.option = webdriver.ChromeOptions()
-        # self.option.add_argument('headless')
-        # self.driver = webdriver.Chrome(options=self.option)
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
         self.static_URL = 'https://youla.ru'
-        self.city = city
+        self.city = city #city?
 
     def __del__(self):
         self.driver.close()
@@ -30,11 +28,10 @@ class YoulaParser(Parser):
             self.driver.refresh()
 
         self.driver.find_element(By.TAG_NAME, 'button').click()
-        time.sleep(2)
+        time.sleep(5)
         self.driver.find_element(By.XPATH, "//li[@role='button']//span[text()='Город']").click()
         time.sleep(2)
         towns = self.driver.find_elements(By.XPATH, "//div[@data-test-component='GeolocationModal']//div[@width=240]")
-        true_town = ''
 
         for i in towns:
             town = i.text
@@ -42,7 +39,6 @@ class YoulaParser(Parser):
                 i.click()
                 break
             else:
-                true_town = i.text
                 continue ##Здесь можно обработать ошибку на ввод города
 
         if town != self.city:
@@ -66,7 +62,7 @@ class YoulaParser(Parser):
     def get_ads(self, from_, to_, input_text):  # поиск товара, фильтры ввода цены, установка цены от, до.
         time.sleep(5)
         self.driver.find_element(By.TAG_NAME, 'input').send_keys(f"{input_text}\n")
-        time.sleep(3)
+        time.sleep(5)
         if from_ is None and to_ is None:
             pass
         elif from_ is None:
@@ -81,24 +77,33 @@ class YoulaParser(Parser):
             self.driver.find_element(By.NAME, 'to').send_keys(f"{to_}")
             time.sleep(1)
 
-    def parse(self, user_id):  # запуск парсера, поиск элементов с атрибутом 'data-test-component': 'ProductCard', а также запись ссылки, названия и цены товара в соответствующие списки, закрытие драйвера
+    #user_id
+    def parse(self, user_id):
         time.sleep(2)
-        html = self.driver.page_source
-        soup = BeautifulSoup(html, 'lxml')
-        cards = soup.find_all('figure', {'data-test-component': 'ProductCard'})
 
         new_links = []  # список ссылок
         names = []  # список названий
         prices = []  # список цен
-
-        for i in cards:
-            new_links.append(self.static_URL + i.find_previous('a').get('href'))
-            names.append(i.find_previous('a').get('title'))
-            prices.append(i
-                          .find('span', {'data-test-component': 'Price'})
-                          .get_text()
-                          .replace('\u205f', '')
-                          .replace('\xa0₽', ''))
+        k = 0
+        while k < 2:
+            html = self.driver.page_source
+            soup = BeautifulSoup(html, 'lxml')
+            cards1 = soup.find_all('figure', {'data-test-component': 'ProductCard'})
+            for i in cards1:
+                new_links.append(self.static_URL + i.find_previous('a').get('href'))
+                names.append(i.find_previous('a').get('title'))
+                prices.append(i
+                              .find('span', {'data-test-component': 'Price'})
+                              .get_text()
+                              .replace('\u205f', '')
+                              .replace('\xa0₽', ''))
+            if self.driver.find_elements(By.XPATH,
+                                         "//div[@data-test-block='IndexContainer']//div[text()='Измените условия поиска, чтобы увидеть больше товаров']"):
+                break
+            else:
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(2)
+                k += 1
 
         new_prices = [price.replace('Цена по запросу', 'Цена не указана')
                       if price == 'Цена по запросу' else price for price in prices]
@@ -106,18 +111,32 @@ class YoulaParser(Parser):
         for j in range(len(new_prices)):
             new_prices[j] = new_prices[j].replace('руб.', '')
 
+        # del names[48:51]
+        # del new_prices[48:51]
+        # del new_links[48:51]
+
         return self.get_result(names, new_prices, new_links, user_id, self.city)
 
+
+    #добавила user_id и город
     @staticmethod
     def get_result(names, new_prices, new_links, user_id=0, city='Челябинск'):
         result = []
 
         for name, price, link in zip(names, new_prices, new_links):
-            data = {'user_id': user_id, 'url': link, 'title': name, 'price': price, 'city':city}
+            data = {'user_id': user_id, 'url': link, 'title': name, 'price': price, 'city': city}
             result.append(data)
 
         return result
 
+    def change_price(self, url):
+        self.driver.get(url)
+        time.sleep(10)
+        soup = BeautifulSoup(self.driver.page_source, features="lxml")
+        price = int(
+            soup.find('span', {'data-test-component': 'Price'}).get_text().replace('₽руб.', '').replace('\u205f',
+                                                                                                        '').strip())
+        return price
 
 #input_text = 'Машины'  # ввод товара (можно изменять)
 #input_city = 'Челябинск'   # ввод города (можно изменять)

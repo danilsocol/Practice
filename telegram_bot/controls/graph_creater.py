@@ -16,6 +16,8 @@ class graph_creater:
     @staticmethod
     def graph_creat(step,mass,list_x,id):
 
+
+
         fig = plt.figure(figsize=(6, 4))
         ax = fig.add_subplot()
 

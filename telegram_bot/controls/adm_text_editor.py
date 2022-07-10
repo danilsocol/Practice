@@ -13,7 +13,9 @@ from telegram_bot.controls.graph_creater import graph_creater
 class adm_text_editor:
     adm_dict = dict()
 
-    async def editor_menu_adm(message):
+
+
+    def editor_menu_adm(message):
         if (message.text == "Перейти в режим пользователя"):
             settings.mode_adm = False
             bot.send_message(message.chat.id,
@@ -33,8 +35,14 @@ class adm_text_editor:
             adm_text_editor.select_interval(message)
 
         elif(message.text == "Добавить пользователю койны"):
-            bot.send_message(message.chat.id, text="Введите id пользователя и кол-во койнов (например: id 486468 coins 1000)")
+            bot.send_message(message.chat.id, text="Введите id пользователя и кол-во койнов (например: id 486468 coins 1000)" ,
+            reply_markup=create_menus.markup_menu_back)
             bot.register_next_step_handler(message, adm_text_editor.set_user_and_coins)
+
+        elif (message.text == "Обновить избранное"):
+            bot.send_message(message.chat.id, text="Началось обновление избранного, дождитесь сообщение об окончании")
+            database_methods.update_all_favorite_prices()
+            bot.send_message(message.chat.id, text="Обновление закончилось")
 
         else:
             bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
@@ -42,23 +50,24 @@ class adm_text_editor:
 
     def select_interval(message):
         bot.register_next_step_handler(message, adm_text_editor.editor_interval)
-
         bot.send_message(message.chat.id,
                          text="Выберете промежуток времени".format(
                              message.from_user), reply_markup=create_menus.markup_menu_interval_selection)
 
     def set_user_and_coins(message):
-        id_user_and_coins = message.text.split()
-        database_methods.change_coins(id_user_and_coins[0],id_user_and_coins[1])
-        bot.send_message(message.chat.id,
-                         text=f"Койны были добавлены".format(
-                             message.from_user), reply_markup=create_menus.markup_adm_menu)
+        if(message.text != "Назад"):
+            id_user_and_coins = message.text.split()
+            database_methods.change_coins(id_user_and_coins[0],id_user_and_coins[1])
+            bot.send_message(message.chat.id,
+                             text=f"Койны были добавлены".format(
+                                 message.from_user), reply_markup=create_menus.markup_adm_menu)
+
 
     def editor_interval(message):
         asyncio.run(adm_text_editor.editor_interval_as(message))
 
 
-    async def editor_interval_as(message): #TODO изменить год
+    async def editor_interval_as(message):
         if (adm_text_editor.adm_dict[message.chat.id] == "act"):
             if (message.text == "Неделя"):
                 act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=6),

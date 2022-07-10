@@ -11,7 +11,7 @@ from settings import bot
 from telegram_bot.controls.create_menus import create_menus
 
 
-class output_ad:
+class output_ad:#TODO словари
     count = 0
     ad_youla = 0
     ad_avito = 0
@@ -22,7 +22,14 @@ class output_ad:
     @staticmethod
     def down_ad(message, ad):
         output_ad.ad[message.chat.id] = ad
-        bot.register_next_step_handler(message, output_ad.bd_or_parse)
+        bot.register_next_step_handler(message, output_ad.buff)
+
+
+    def buff(message):
+        bot.send_message(message.chat.id,
+                         text=f"Вы в очереди".format(
+                             message.from_user))
+        output_ad.bd_or_parse(message)
 
     @staticmethod
     def bd_or_parse(message):
@@ -58,9 +65,7 @@ class output_ad:
 
     @staticmethod
     def come_queue(message):
-        bot.send_message(message.chat.id,
-                         text=f"Вы {len(output_ad.q)} в очереди".format(
-                             message.from_user))
+
 
         output_ad.q.append(message.chat.id)
         if (threading.active_count() > 8 and output_ad.q[0] != message.chat.id):
@@ -83,7 +88,7 @@ class output_ad:
                 break
             markup = types.InlineKeyboardMarkup()
             btn_add_favourit = types.InlineKeyboardButton(text="Добавить в избранное",
-                                                          callback_data=f"add {output_ad.ad_bd[i][3][-10::]}")
+                                                          callback_data=f"add {output_ad.ad_bd[i][2][-10::]}")
             markup.add(btn_add_favourit)
             bot.send_message(message.chat.id,
                              text=f"Название: {output_ad.ad_bd[i][3]}\n"
@@ -166,7 +171,7 @@ class output_ad:
                                  message.from_user), reply_markup=create_menus.markup_menu_yes_no)
 
 
-    def editor_bd(message):
+    def editor_bd(message): #TODO добавить start
         if(message.text == "Да"):
             #TODO койны гони
             output_ad.output_bd(message)

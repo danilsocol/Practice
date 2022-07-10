@@ -1,10 +1,16 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import sqlite3
 import json
 import asyncio
 import datetime
+
+from null import Null
+
 import avito_parser as pa
 import Youla_parser as yp
 from dateutil.relativedelta import relativedelta
+import math
 
 from settings import bot
 from telegram_bot.controls.create_menus import create_menus
@@ -12,7 +18,7 @@ from telegram_bot.controls.create_menus import create_menus
 
 class database_methods:
 
-    #добавление пользователя в бд
+    #РґРѕР±Р°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р±Рґ
     @staticmethod
     def create_user(chat_id, city):
         conn = sqlite3.connect('BuyBot.db')
@@ -29,7 +35,7 @@ class database_methods:
         conn.close()
 
 
-    #метод выдачи данных пользователя (койны имя фамилия город) - сделано!!!
+    #РјРµС‚РѕРґ РІС‹РґР°С‡Рё РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ (РєРѕР№РЅС‹ РёРјСЏ С„Р°РјРёР»РёСЏ РіРѕСЂРѕРґ) - СЃРґРµР»Р°РЅРѕ!!!
     @staticmethod
     def get_user_data(user_id):
         conn = sqlite3.connect('BuyBot.db')
@@ -44,9 +50,9 @@ class database_methods:
         return result
 
 
-    #прием кол-во койнов и id чтоб изменить койны в бд
-    #чтобы отнять, вводим отрицательное число
-    #если не передавать число, вычитаются 50
+    #РїСЂРёРµРј РєРѕР»-РІРѕ РєРѕР№РЅРѕРІ Рё id С‡С‚РѕР± РёР·РјРµРЅРёС‚СЊ РєРѕР№РЅС‹ РІ Р±Рґ
+    #С‡С‚РѕР±С‹ РѕС‚РЅСЏС‚СЊ, РІРІРѕРґРёРј РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРµ С‡РёСЃР»Рѕ
+    #РµСЃР»Рё РЅРµ РїРµСЂРµРґР°РІР°С‚СЊ С‡РёСЃР»Рѕ, РІС‹С‡РёС‚Р°СЋС‚СЃСЏ 50
     @staticmethod
     def change_coins(user_id, coins_count=-50):
         user = database_methods.get_user_data(user_id)
@@ -61,7 +67,7 @@ class database_methods:
         cur.close()
         conn.close()
 
-    #проверить есть ли id чата в бд - сделано!!!!
+    #РїСЂРѕРІРµСЂРёС‚СЊ РµСЃС‚СЊ Р»Рё id С‡Р°С‚Р° РІ Р±Рґ - СЃРґРµР»Р°РЅРѕ!!!!
     @staticmethod
     def check_first_start(outer_user_id):
         conn = sqlite3.connect('BuyBot.db')
@@ -75,9 +81,9 @@ class database_methods:
         conn.close()
         return result[0] > 0    #bool
 
-    #Выдать количество новых пользователей зарегистрированных за промежуток времени
-    #вернуть словарь: день (в виде даты) - количество человек
-    #потом добавить масштаб (день-неделя) - не сделано
+    #Р’С‹РґР°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РЅРѕРІС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹С… Р·Р° РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё
+    #РІРµСЂРЅСѓС‚СЊ СЃР»РѕРІР°СЂСЊ: РґРµРЅСЊ (РІ РІРёРґРµ РґР°С‚С‹) - РєРѕР»РёС‡РµСЃС‚РІРѕ С‡РµР»РѕРІРµРє
+    #РїРѕС‚РѕРј РґРѕР±Р°РІРёС‚СЊ РјР°СЃС€С‚Р°Р± (РґРµРЅСЊ-РЅРµРґРµР»СЏ) - РЅРµ СЃРґРµР»Р°РЅРѕ
     @staticmethod
     def get_list_rookie(start_date, end_date=None):
         if end_date == None:
@@ -99,7 +105,7 @@ class database_methods:
         return result #list
 
 
-    #в параметрах любой день в нужном месяце и количество следующих месяцев
+    #РІ РїР°СЂР°РјРµС‚СЂР°С… Р»СЋР±РѕР№ РґРµРЅСЊ РІ РЅСѓР¶РЅРѕРј РјРµСЃСЏС†Рµ Рё РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»РµРґСѓСЋС‰РёС… РјРµСЃСЏС†РµРІ
     @staticmethod
     def get_list_rookie_months(start_date, months_count):
         conn = sqlite3.connect('BuyBot.db')
@@ -118,7 +124,7 @@ class database_methods:
         conn.close()
         return result #list
 
-    #Выдать список активных за промежуток времени
+    #Р’С‹РґР°С‚СЊ СЃРїРёСЃРѕРє Р°РєС‚РёРІРЅС‹С… Р·Р° РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё
     @staticmethod
     def get_active_users(start_date, end_date=None):
         if end_date == None:
@@ -139,7 +145,7 @@ class database_methods:
         conn.close()
         return result
 
-    #Кол-во запросов за промежуток времени
+    #РљРѕР»-РІРѕ Р·Р°РїСЂРѕСЃРѕРІ Р·Р° РїСЂРѕРјРµР¶СѓС‚РѕРє РІСЂРµРјРµРЅРё
     @staticmethod
     def get_requests_count(start_date, end_date=None):
         if end_date == None:
@@ -160,7 +166,7 @@ class database_methods:
         conn.close()
         return result
 
-    #добавляем в таблицу запросов
+    #РґРѕР±Р°РІР»СЏРµРј РІ С‚Р°Р±Р»РёС†Сѓ Р·Р°РїСЂРѕСЃРѕРІ
     @staticmethod
     def add_request(outer_user, request, city):
         #user = self.get_user_data(outer_user)
@@ -174,9 +180,9 @@ class database_methods:
         cur.close()
         conn.close()
 
-    #объявления с авито
+    #РѕР±СЉСЏРІР»РµРЅРёСЏ СЃ Р°РІРёС‚Рѕ
     @staticmethod
-    def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
+    def get_avito_ads(outer_user_id, city, request,lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
@@ -198,9 +204,10 @@ class database_methods:
         conn.close()
         return data
 
-    #получаем объявления с юлы
+    #РїРѕР»СѓС‡Р°РµРј РѕР±СЉСЏРІР»РµРЅРёСЏ СЃ СЋР»С‹
     @staticmethod
     def get_youla_ads(outer_user_id, city, request,str, lower_bound=None, upper_bound=None):
+    #def get_youla_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #y = yp.YoulaParser(user[1])
 
@@ -232,11 +239,11 @@ class database_methods:
         conn.close()
         return data
 
-#Открываю браузер
-#Ищу объявления по запросу
-#Собираю данные
+#РћС‚РєСЂС‹РІР°СЋ Р±СЂР°СѓР·РµСЂ
+#РС‰Сѓ РѕР±СЉСЏРІР»РµРЅРёСЏ РїРѕ Р·Р°РїСЂРѕСЃСѓ
+#РЎРѕР±РёСЂР°СЋ РґР°РЅРЅС‹Рµ
 
-    #добавить в избранное по ссылке
+    #РґРѕР±Р°РІРёС‚СЊ РІ РёР·Р±СЂР°РЅРЅРѕРµ РїРѕ СЃСЃС‹Р»РєРµ
     @staticmethod
     def add_fav(outer_user_id, part_url):
         conn = sqlite3.connect('BuyBot.db')
@@ -256,32 +263,6 @@ class database_methods:
         cur.close()
         conn.close()
 
-    #обновить цены
-    #где обнова юлы?
-    @staticmethod
-    def update_all_favorite_prices():
-        conn = sqlite3.connect('BuyBot.db')
-        cur = conn.cursor()
-        cur.execute("""
-        SELECT url FROM Favourites
-        """)
-        urls = cur.fetchall()
-
-        for url in urls:
-            if str(url[0]).find('avito.ru') > 0:
-                avito = pa.AvitoParse()
-                new_price = avito.check_price_change(url[0])
-                cur.execute("""
-                UPDATE Favourites 
-                SET (price) = (:new_price)
-                """, {'new_price': new_price})
-                conn.commit()
-            else:
-                pass
-        cur.close()
-        conn.close()
-
-    #получить список избранного
     @staticmethod
     def get_fav(user_id):
         conn = sqlite3.connect('BuyBot.db')
@@ -296,7 +277,89 @@ class database_methods:
         return result
 
 
-    #убрать избранную штучку по последним символам
+    #РѕР±РЅРѕРІРёС‚СЊ РІСЃС‘
+    @staticmethod
+    def update_all_favorite_prices():
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT url, user_id FROM Favourites
+        """)
+        dict = cur.fetchall()
+
+        for t in dict:
+            cur.execute("""
+            SELECT price FROM Buffer
+            WHERE url = :url
+            """, {'url':t[0]})
+            old_price = cur.fetchone()[0]
+            if str(t[0]).find('avito.ru') > 0:
+                avito = pa.AvitoParse('',0)
+                try:
+                    new_price = avito.check_price_change(t[0])
+                except Exception:
+                    new_price = 0
+            else:
+                youla = yp.YoulaParser('')
+                try:
+                    new_price = youla.change_price(t[0])
+                except Exception:
+                    new_price = 0
+            cur.execute("""
+                        UPDATE Favourites 
+                        SET (price) = (:new_price)
+                        WHERE url = :url
+                        """, {'new_price': new_price, 'url': t[0]})
+            conn.commit()
+
+            if (abs(new_price-old_price) > 0.1*old_price):
+                database_methods.notify_price_change(t[0], new_price, t[1])
+        cur.close()
+        conn.close()
+
+    #РІСЃРµ РѕР±РЅРѕРІР»РµРЅРёСЏ С‚РѕРІР°СЂР° РїРѕ С‡Р°СЃС‚Рё СЃСЃС‹Р»РєРё
+    @staticmethod
+    def fav_updates(user_id, part_url):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+        SELECT id FROM Favourites
+        WHERE :user_id = user_id AND instr(url, :part)>0
+        """, {'user_id': user_id, 'part': part_url})
+        temp = cur.fetchall()
+        for t in temp:
+            cur.execute("""
+            SELECT updated, price FROM Favourites_price_updates
+            WHERE fav_id = :outer
+            """, {'outer': t[0]})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result
+
+    #С‚РµР»Рѕ РїСЂРёРґСѓРјР°Р№С‚Рµ СЃР°РјРё
+    @staticmethod
+    def notify_price_change(url, price, user_id):
+        bot.send_message(user_id,
+                         text=f"Р—РґСЂР°СЃС‚РІСѓРµР№С‚Рµ, Сѓ С‚РѕРІР°СЂР° РёР·РјРµРЅРёР»Р°СЃСЊ С†РµРЅР°!\n"
+                              f"РќРѕРІР°СЏ С†РµРЅР°: {price}\n"
+                              f"{url}")
+
+
+    @staticmethod
+    def get_fav(user_id):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM Favourites
+            WHERE :user_id = user_id
+            """, {'user_id': user_id})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result
+
+    #СѓР±СЂР°С‚СЊ РёР· РёР·Р±СЂР°РЅРЅРѕРіРѕ
     @staticmethod
     def remove_fav(user_id, part_url):
         conn = sqlite3.connect('BuyBot.db')
@@ -305,11 +368,11 @@ class database_methods:
                 DELETE FROM Favourites
                 WHERE :user_id = user_id AND instr(url, :part) > 0 
                 """, {'user_id': user_id, 'part': part_url})
-        result = cur.fetchall()
+        conn.commit()
         cur.close()
         conn.close()
 
-    #список пользовательских запросов
+    #СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… Р·Р°РїСЂРѕСЃРѕРІ
     @staticmethod
     def get_user_requests(user_id):
         conn = sqlite3.connect('BuyBot.db')
@@ -324,9 +387,13 @@ class database_methods:
         return result
 
 
-    #получаем объявления из бд
+    #РїРѕР»СѓС‡Р°РµРј РѕР±СЉСЏРІР»РµРЅРёСЏ РёР· Р±Рґ
     @staticmethod
     def get_ads_from_db(user_id, request, city, lower_bound=0, upper_bound=1_000_000):
+        if(lower_bound == Null):
+            lower_bound = 0
+        if(upper_bound == Null):
+            upper_bound = 1_000_000
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         database_methods.add_request(user_id,request,city)
