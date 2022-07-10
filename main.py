@@ -12,8 +12,6 @@ from database_methods import database_methods
 
 
 class main:
-
-
     create_menus.create_markup(0)
 
     # Commands
@@ -23,8 +21,8 @@ class main:
         if(not database_methods.check_first_start(message.chat.id)):
             bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
             bot.send_message(message.chat.id,
-                             text="Привет, я смотрю вы здесь в первый раз, давай те заполним вашу анкету"
-                                  "\nВведите свое Имя и фамилию через пробел".format(
+                             text="Привет, я смотрю вы здесь в первый раз, давайте заполним вашу анкету"
+                                  "\nВведите свое Имя и свою фамилию через пробел".format(
                                  message.from_user))
         else:
             bot.send_message(message.chat.id,

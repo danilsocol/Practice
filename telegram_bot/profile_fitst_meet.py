@@ -14,7 +14,7 @@ class profile_fitst_meet:
             asyncio.run(profile_fitst_meet.get_name_prof_as(message))
         except:
             bot.send_message(message.chat.id,
-                             text="Не верно введены данные, пожалуста повторите попытку".format(
+                             text="Не верно введены данные, пожалуйста  повторите попытку".format(
                                  message.from_user))
             bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
 
@@ -33,7 +33,7 @@ class profile_fitst_meet:
             asyncio.run(profile_fitst_meet.get_city_prof_as(message))
         except:
             bot.send_message(message.chat.id,
-                             text="Не верно введены данные, пожалуста повторите попытку".format(
+                             text="Не верно введены данные, пожалуйста повторите попытку".format(
                                  message.from_user))
             bot.register_next_step_handler(message, profile_fitst_meet.get_city_prof)
 

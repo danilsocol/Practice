@@ -53,7 +53,6 @@ class collect_inf:
             return "до 5000"
 
 
-
     async def processing_range_str(text,message):
         collect_inf.user_dict[message.chat.id].get_range([None,None])
         str = text.split(" ")
@@ -92,8 +91,9 @@ class collect_inf:
                 bot.send_message(message.chat.id,
                                  text="Вы в меню".format(
                                      message.from_user), reply_markup=create_menus.markup_main_menu)
+
             else:
-                bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+                bot.send_message(message.chat.id, text="На такую комманду я не запрограммирован..")
                 bot.register_next_step_handler(message, collect_inf.question_search_your_city)
 
 
@@ -112,6 +112,7 @@ class collect_inf:
     def get_sphere(message):
         asyncio.run(collect_inf.get_sphere_as(message))
 
+
     async def get_sphere_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
             await collect_inf.collecting_inf(message)
@@ -124,9 +125,9 @@ class collect_inf:
                                  message.from_user), reply_markup=create_menus.markup_range_type)
 
 
-
     def get_type_range(message):
         asyncio.run(collect_inf.get_type_range_as(message))
+
 
     async def get_type_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
@@ -143,20 +144,13 @@ class collect_inf:
 
             else:
                 bot.send_message(message.chat.id,
-                                 text="Не верно введены данные, пожалуста повторите попытку".format(
+                                 text="Не верно введены данные, пожалуйста  повторите попытку".format(
                                      message.from_user), reply_markup=create_menus.markup_range_type)
                 bot.register_next_step_handler(message, collect_inf.get_type_range)
 
 
     def get_range(message):
-        # try:
            asyncio.run(collect_inf.get_range_as(message))
-
-        # except:
-        #     bot.send_message(message.chat.id,
-        #                      text="Не верно введены данные, пожалуста повторите попытку".format(
-        #                          message.from_user))
-        #     bot.register_next_step_handler(message, collect_inf.get_range)
 
     async def get_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):
@@ -170,7 +164,7 @@ class collect_inf:
                              text=f"Спасибо за подробности\n"
                                   f"Откуда вы хотите брать информацию из бд или сайта\n"
                                   f"С сайта придется немного подольше подождать, но информация свежая\n"
-                                  f"С бд быстрее, но не факт что информация не устарела".format(
+                                  f"С базы данных быстрее, но не факт что информация не устарела".format(
                                  message.from_user),reply_markup= create_menus.markup_menu_parse_or_bd)
             output_ad.down_ad(message,collect_inf.user_dict[message.chat.id])
 

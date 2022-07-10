@@ -21,15 +21,15 @@ class adm_text_editor:
                              text="Вы вернулись".format(
                                  message.from_user), reply_markup=create_menus.markup_start_menu)
 
-        elif( message.text == "Просмотреть кол-во активности пользователей"):
+        elif( message.text == "Просмотреть активности пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "act"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Просмотреть кол-во запросов"):
+        elif (message.text == "Просмотреть запросов"):
             adm_text_editor.adm_dict[message.chat.id] = "req"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Просмотреть кол-во новых пользователей"):
+        elif (message.text == "Просмотреть новых пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "rook"
             adm_text_editor.select_interval(message)
 
@@ -50,7 +50,7 @@ class adm_text_editor:
                                  text="Вы в меню".format(
                                      message.from_user), reply_markup=create_menus.markup_main_menu)
             else:
-                bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+                bot.send_message(message.chat.id, text="На такую комманду я не запрограммирован..")
 
 
     def select_interval(message):
@@ -78,7 +78,7 @@ class adm_text_editor:
                 act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=6),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                 text=f"В выбранный промежуток времени активно {act} пользователей".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
 
@@ -86,14 +86,14 @@ class adm_text_editor:
                 act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=29),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                 text=f"В выбранный промежуток времени активно {act} пользователей".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
             elif (message.text == "Год"):
                 act = database_methods.get_active_users(datetime.date.today() - datetime.timedelta(days=364),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени активано {act} пользователей".format(
+                                 text=f"В выбранный промежуток времени активно {act} пользователей".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
         elif( adm_text_editor.adm_dict[message.chat.id] == "req"):
@@ -101,7 +101,7 @@ class adm_text_editor:
                 req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=6),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                 text=f"В выбранный промежуток времени было {req} запросов".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
 
@@ -109,14 +109,14 @@ class adm_text_editor:
                 req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=29),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                 text=f"В выбранный промежуток времени было {req} запросов".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
             elif (message.text == "Год"):
                 req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=364),
                                                         datetime.date.today())
                 bot.send_message(message.chat.id,
-                                 text=f"В выбронный промежуток времени было {req} запросов".format(
+                                 text=f"В выбранный промежуток времени было {req} запросов".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
         elif (adm_text_editor.adm_dict[message.chat.id] == "rook"):
@@ -154,6 +154,6 @@ class adm_text_editor:
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
         else:
-            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+            bot.send_message(message.chat.id, text="На такую комманду я не запрограммирован..")
 
 

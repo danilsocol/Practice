@@ -43,8 +43,6 @@ class user_text_editor:
         elif (message.text == "История"):
             view_his.start_view(message)
 
-
-
         else:
             bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
 
