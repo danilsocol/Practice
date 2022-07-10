@@ -52,6 +52,6 @@ class main:
         if(str(call.data).split()[0] == "add"):
             database_methods.add_fav(call.message.chat.id, str(call.data).split()[1])
         else:
-            pass#TODO добавить удаление из избраного
+            database_methods.remove_fav(call.message.chat.id, str(call.data).split()[1])
 
     bot.polling()

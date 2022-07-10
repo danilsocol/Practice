@@ -2,10 +2,10 @@ import asyncio
 
 from database_methods import database_methods
 from settings import bot
-from telegram_bot.controls import view_his
 from telegram_bot.controls.collect_inf import collect_inf
 from telegram_bot.controls.create_menus import create_menus
 from telegram_bot.controls.view_fav import view_fav
+from telegram_bot.controls.view_his import view_his
 from telegram_bot.search_inf import search_inf
 
 

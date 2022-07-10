@@ -15,12 +15,38 @@ class output_ad:
     count = 0
     ad_youla = 0
     ad_avito = 0
+    ad_bd = 0
     q = []
-
+    ad = {}
+    #get_ads_from_db
     @staticmethod
     def down_ad(message, ad):
+        output_ad.ad[message.chat.id] = ad
+        bot.register_next_step_handler(message, output_ad.bd_or_parse)
+
+    @staticmethod
+    def bd_or_parse(message):
+        if(message.text == "База данных"):
+            output_ad.down_ad_bd(message, output_ad.ad[message.chat.id])
+        elif(message.text == "Сайт"):
+            output_ad.down_ad_pars(message, output_ad.ad[message.chat.id])
+        else:
+            bot.register_next_step_handler(message, output_ad.bd_or_parse)
+            bot.send_message(message.chat.id,
+                             text="Я вас не понял".format(
+                                 message.from_user), reply_markup=create_menus.markup_menu_parse_or_bd)
+
+    @staticmethod
+    def down_ad_bd(message, ad):
+        output_ad.count = 0
+
+        output_ad.ad_bd = database_methods.get_ads_from_db(message.chat.id,  ad.sphere,ad.city, ad.range[0], ad.range[1])
+        output_ad.output_bd(message)
+
+    @staticmethod
+    def down_ad_pars(message, ad):
         output_ad.come_queue(message)
-        count = 0
+        output_ad.count = 0
 
         th_youla = ThreadPool(processes=1)
         th_avito = ThreadPool(processes=1)
@@ -28,7 +54,7 @@ class output_ad:
         th2 = th_avito.apply_async(database_methods.get_avito_ads,(message.chat.id, ad.city, ad.sphere, ad.range[0], ad.range[1]))
         output_ad.ad_youla = th1.get()
         output_ad.ad_avito = th2.get()
-        output_ad.output(message)
+        output_ad.output_parse(message)
 
     @staticmethod
     def come_queue(message):
@@ -49,7 +75,36 @@ class output_ad:
                          text=f"Вас пропустили".format(
                              message.from_user))
 
-    def output(message):
+    def output_bd(message):
+        over_ad = True
+        for i in range(output_ad.count, output_ad.count + 5):
+            if (len(output_ad.ad_bd) <= i):
+                over_ad = False
+                break
+            markup = types.InlineKeyboardMarkup()
+            btn_add_favourit = types.InlineKeyboardButton(text="Добавить в избранное",
+                                                          callback_data=f"add {output_ad.ad_bd[i][3][-10::]}")
+            markup.add(btn_add_favourit)
+            bot.send_message(message.chat.id,
+                             text=f"Название: {output_ad.ad_bd[i][3]}\n"
+                                  f"Цена: {output_ad.ad_bd[i][4]}\n"
+                                  f"Ссылка: {output_ad.ad_bd[i][2]}".format(
+                                 message.from_user), reply_markup=markup)
+
+        if (not over_ad):
+            # if (not over_ad[0]):
+            bot.send_message(message.chat.id,
+                             text="Объявления закончились\nВы вернулись в меню".format(
+                                 message.from_user), reply_markup=create_menus.markup_main_menu)
+
+        else:
+            output_ad.count += 5
+            bot.register_next_step_handler(message, output_ad.editor_bd)
+            bot.send_message(message.chat.id,
+                             text="Вы хотите ещё?".format(
+                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
+
+    def output_parse(message):
         over_ad = [True, True]
         #over_ad = [True]
         for i in range(output_ad.count,output_ad.count+5):
@@ -87,17 +142,17 @@ class output_ad:
 
         else:
             output_ad.count += 5
-            bot.register_next_step_handler(message, output_ad.editor)
+            bot.register_next_step_handler(message, output_ad.editor_parse)
             bot.send_message(message.chat.id,
                              text="Вы хотите ещё?".format(
                                  message.from_user), reply_markup=create_menus.markup_menu_yes_no)
 
 
 
-    def editor(message):
+    def editor_parse(message):
         if(message.text == "Да"):
             #TODO койны гони
-            output_ad.output(message)
+            output_ad.output_parse(message)
 
         elif(message.text == "Нет"):
             bot.send_message(message.chat.id,
@@ -105,7 +160,24 @@ class output_ad:
                                  message.from_user), reply_markup=create_menus.markup_main_menu)
 
         else:
-            bot.register_next_step_handler(message, output_ad.editor)
+            bot.register_next_step_handler(message, output_ad.editor_parse)
+            bot.send_message(message.chat.id,
+                             text="Я вас не понял".format(
+                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
+
+
+    def editor_bd(message):
+        if(message.text == "Да"):
+            #TODO койны гони
+            output_ad.output_bd(message)
+
+        elif(message.text == "Нет"):
+            bot.send_message(message.chat.id,
+                             text="Вы вернулись в меню".format(
+                                 message.from_user), reply_markup=create_menus.markup_main_menu)
+
+        else:
+            bot.register_next_step_handler(message, output_ad.editor_bd)
             bot.send_message(message.chat.id,
                              text="Я вас не понял".format(
                                  message.from_user), reply_markup=create_menus.markup_menu_yes_no)

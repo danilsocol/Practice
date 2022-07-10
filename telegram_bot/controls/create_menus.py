@@ -12,6 +12,7 @@ class create_menus:
     markup_menu_back = 0
     markup_menu_interval_selection = 0
     markup_menu_yes_no = 0
+    markup_menu_parse_or_bd = 0
     def create_markup(self):
 
         create_menus.markup_start_menu = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -38,6 +39,8 @@ class create_menus:
         create_menus.markup_menu_yes_no = types.ReplyKeyboardMarkup(resize_keyboard=True)
         asyncio.run(create_menus.create_menu_yes_no(create_menus.markup_menu_yes_no))
 
+        create_menus.markup_menu_parse_or_bd = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        asyncio.run(create_menus.create_menu_parse_or_bd(create_menus.markup_menu_parse_or_bd))
 
 
     async def create_adm_menu(markup):
@@ -48,6 +51,11 @@ class create_menus:
         btn_normal_mode = types.KeyboardButton("Перейти в режим пользователя")
         markup.add(btn_activity, btn_number_of_requests, btn_number_of_new_users,btn_add_user_coins,  btn_normal_mode)
 
+
+    async def create_menu_parse_or_bd(markup):
+        btn_parse = types.KeyboardButton("База данных")
+        btn_bd = types.KeyboardButton("Сайт")
+        markup.add(btn_bd, btn_parse)
 
     async def create_start_menu(markup):
         btn_menu = types.KeyboardButton("Меню")

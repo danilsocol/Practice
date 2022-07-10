@@ -155,14 +155,14 @@ class collect_inf:
         else:
             collect_inf.user_dict[message.chat.id].step = 0
             await collect_inf.processing_range_str(message.text, message) #TODO Изменить отправку запроса для истории
-            collect_inf.processing_range_str(message.text, message)  # TODO Изменить отправку запроса для истории
-            database_methods.add_request(message.chat.id,collect_inf.user_dict[message.chat.id].sphere)
+            await collect_inf.processing_range_str(message.text, message)  # TODO Изменить отправку запроса для истории
+            database_methods.add_request(message.chat.id,collect_inf.user_dict[message.chat.id].sphere,collect_inf.user_dict[message.chat.id].city)
             bot.send_message(message.chat.id,
-                             text=f"Спасибо за подробности {collect_inf.user_dict[message.chat.id].type_range} "
-                                  f"{collect_inf.user_dict[message.chat.id].range} "
-                                  f"{collect_inf.user_dict[message.chat.id].city} "
-                                  f"{collect_inf.user_dict[message.chat.id].sphere} ".format(
-                                 message.from_user),reply_markup= create_menus.markup_menu_collect_inf)
+                             text=f"Спасибо за подробности\n"
+                                  f"Откуда вы хотите брать информацию из бд или сайта\n"
+                                  f"С сайта придется немного подольше подождать, но информация свежая\n"
+                                  f"С бд быстрее, но не факт что информация не устарела".format(
+                                 message.from_user),reply_markup= create_menus.markup_menu_parse_or_bd)
             output_ad.down_ad(message,collect_inf.user_dict[message.chat.id])
 
 

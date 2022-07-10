@@ -106,14 +106,14 @@ class YoulaParser(Parser):
         for j in range(len(new_prices)):
             new_prices[j] = new_prices[j].replace('руб.', '')
 
-        return self.get_result(names, new_prices, new_links, user_id)
+        return self.get_result(names, new_prices, new_links, user_id, self.city)
 
     @staticmethod
-    def get_result(names, new_prices, new_links, user_id=0):
+    def get_result(names, new_prices, new_links, user_id=0, city='Челябинск'):
         result = []
 
         for name, price, link in zip(names, new_prices, new_links):
-            data = {'user_id': user_id, 'url': link, 'title': name, 'price': price}
+            data = {'user_id': user_id, 'url': link, 'title': name, 'price': price, 'city':city}
             result.append(data)
 
         return result

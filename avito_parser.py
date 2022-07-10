@@ -84,12 +84,13 @@ class AvitoParse(Parser):
         return links_on_page
 
     @staticmethod
-    def parse_card(card_element, user_id):
+    def parse_card(card_element, user_id, city):
         card = dict()
         card['user_id'] = user_id
         card['url'] = card_element.find_element(By.TAG_NAME, "a").get_attribute('href')  # ссылка
         card['title'] = card_element.find_element(By.TAG_NAME, "h3").text  # название
         card['price'] = card_element.find_elements(By.TAG_NAME, "meta")[1].get_attribute('content')  # цена
+        card['city'] = city
         # card['description'] = card_element.find_element(By.CLASS_NAME,
         #                                                 "iva-item-descriptionStep-C0ty1").text  # описание
         return card
@@ -97,7 +98,7 @@ class AvitoParse(Parser):
     def parse(self, request, price_from, price_to):
         mass_of_cards = []
         for el in self.get_ads(request, price_from, price_to):
-            mass_of_cards.append(self.parse_card(el, self.user_id))
+            mass_of_cards.append(self.parse_card(el, self.user_id, self.city))
         return mass_of_cards
 
     def check_price_change(self, url_ad):

@@ -162,13 +162,13 @@ class database_methods:
 
     #добавл€ем в таблицу запросов
     @staticmethod
-    def add_request(outer_user, request):
+    def add_request(outer_user, request, city):
         #user = self.get_user_data(outer_user)
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
         cur.execute("""
-        INSERT INTO Requests(user_id, text, date_time) VALUES (:user_id, :text, datetime('now'))
-        """, {'user_id': outer_user, 'text': request}
+        INSERT INTO Requests(user_id, text, date_time, city) VALUES (:user_id, :text, datetime('now'), :city)
+        """, {'user_id': outer_user, 'text': request, 'city':city}
         )
         conn.commit()
         cur.close()
@@ -176,12 +176,12 @@ class database_methods:
 
     #объ€влени€ с авито
     @staticmethod
-    def get_avito_ads(outer_user_id, city, request,lower_bound=None, upper_bound=None):
+    def get_avito_ads(outer_user_id, city, request, lower_bound=None, upper_bound=None):
         #user = self.get_user_data(user_id=outer_user_id)
         #p = pa.AvitoParse(user[1], outer_user_id)
         p = pa.AvitoParse(city, outer_user_id)
         p.start()
-        database_methods.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request, city)
         data = p.parse(request, lower_bound, upper_bound)
         data_list = json.dumps(data)
         # data_list = json.dumps(data_list,
@@ -191,8 +191,8 @@ class database_methods:
         #                   separators=(',', ': '))
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
-        cur.executemany('INSERT INTO Buffer (user_id,url,title,price) '
-                        'VALUES (:user_id,:url,:title,:price)', json.loads(data_list))
+        cur.executemany('INSERT INTO Buffer (user_id,url,title,price, city) '
+                        'VALUES (:user_id,:url,:title,:price, :city)', json.loads(data_list))
         conn.commit()
         cur.close()
         conn.close()
@@ -211,7 +211,7 @@ class database_methods:
         bot.send_message(outer_user_id, text=str[1])
 
         y.start()
-        database_methods.add_request(outer_user_id, request)
+        database_methods.add_request(outer_user_id, request, city)
 
         bot.send_message(outer_user_id, text=str[2])
 
@@ -225,8 +225,8 @@ class database_methods:
         #                   separators=(',', ': '))
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
-        cur.executemany('INSERT INTO Buffer (user_id,url,title,price) '
-                        'VALUES (:user_id, :url, :title, :price)', json.loads(data_list))
+        cur.executemany('INSERT INTO Buffer (user_id,url,title,price, city) '
+                        'VALUES (:user_id, :url, :title, :price, :city)', json.loads(data_list))
         conn.commit()
         cur.close()
         conn.close()
@@ -256,19 +256,8 @@ class database_methods:
         cur.close()
         conn.close()
 
-    @staticmethod
-    def get_fav(user_id):
-        conn = sqlite3.connect('BuyBot.db')
-        cur = conn.cursor()
-        cur.execute("""
-            SELECT * FROM Favourites
-            WHERE :user_id = user_id
-            """, {'user_id': user_id})
-        result = cur.fetchall()
-        cur.close()
-        conn.close()
-        return result
-
+    #обновить цены
+    #где обнова юлы?
     @staticmethod
     def update_all_favorite_prices():
         conn = sqlite3.connect('BuyBot.db')
@@ -291,3 +280,61 @@ class database_methods:
                 pass
         cur.close()
         conn.close()
+
+    #получить список избранного
+    @staticmethod
+    def get_fav(user_id):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT * FROM Favourites
+            WHERE :user_id = user_id
+            """, {'user_id': user_id})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result
+
+
+    #убрать избранную штучку по последним символам
+    @staticmethod
+    def remove_fav(user_id, part_url):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+                DELETE FROM Favourites
+                WHERE :user_id = user_id AND instr(url, :part) > 0 
+                """, {'user_id': user_id, 'part': part_url})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+
+    #список пользовательских запросов
+    @staticmethod
+    def get_user_requests(user_id):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT * FROM Requests
+                    WHERE :user_id = user_id
+                    """, {'user_id': user_id})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result
+
+
+    #получаем объ€влени€ из бд
+    @staticmethod
+    def get_ads_from_db(user_id, request, city, lower_bound=0, upper_bound=1_000_000):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        database_methods.add_request(user_id,request,city)
+        cur.execute("""
+        SELECT * FROM Buffer
+        WHERE instr(title, :request)>0 AND city=:city AND price BETWEEN :lower_bound AND :upper_bound
+        """, {'request': request, 'city': city, 'lower_bound': lower_bound, 'upper_bound': upper_bound})
+        result = cur.fetchall()
+        cur.close()
+        conn.close()
+        return result

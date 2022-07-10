@@ -10,16 +10,18 @@ import Youla_parser as yp
 #print(db.check_first_start(25102002))
 
 
-user = db.database_methods.get_user_data(user_id=25102003)
+#user = db.database_methods.get_user_data(user_id=25102003)
 #p = pa.AvitoParse(user[1])
 #p.start()
 request = 'стул'
-lower_bound = 2_000
+lower_bound = 200
 upper_bound = 10_000
 temp = db.database_methods()
 
-db.database_methods.get_avito_ads(25102003, 'Москва',request ,lower_bound,upper_bound)
+print(db.database_methods.get_ads_from_db(25102003, 'скетчбук', 'Чебоксары'))
 
+#db.database_methods.get_youla_ads(25102003, 'Вологда',request ,lower_bound,upper_bound)
+#print(db.database_methods.remove_fav(25102003, '2488170415'))
 #temp.add_fav(25102003, 'https://youla.ru/moskva/zhenskaya-odezhda/aksessuary/ochki-62c5d430678d15570c6ccffc')
 
 #data2 = temp.get_avito_ads(25102003, 'Хабаровск', request, lower_bound, upper_bound)
