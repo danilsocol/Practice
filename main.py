@@ -19,6 +19,7 @@ class main:
     # Commands
     @bot.message_handler(commands=['start'])
     def start(message):
+        settings.mode_adm[message.chat.id] = False
         if(not database_methods.check_first_start(message.chat.id)):
             bot.register_next_step_handler(message, profile_fitst_meet.get_name_prof)
             bot.send_message(message.chat.id,
@@ -32,8 +33,8 @@ class main:
 
 
     @bot.message_handler(commands=['adm'])
-    def adm(message): #TODO сделать не общий bool
-        settings.mode_adm = True
+    def adm(message):
+        settings.mode_adm[message.chat.id] = True
         bot.send_message(message.chat.id,
                          text="Теперь вы адиминстратор".format(
                              message.from_user), reply_markup=create_menus.markup_adm_menu)
@@ -42,7 +43,7 @@ class main:
     # Text
     @bot.message_handler(content_types=['text'])
     def text(message):
-        if(settings.mode_adm):
+        if(settings.mode_adm[message.chat.id]):
             adm_text_editor.editor_menu_adm(message)
         else:
             asyncio.run(user_text_editor.user_editor(message))

@@ -45,7 +45,6 @@ class view_fav:
 
     def editor(message):
         if(message.text == "Да"):
-            #TODO койны гони
             view_fav.view(message)
 
         elif(message.text == "Нет"):

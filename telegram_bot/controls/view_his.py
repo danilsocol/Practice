@@ -44,7 +44,6 @@ class view_his:
 
     def editor(message):
         if(message.text == "Да"):
-            #TODO койны гони
             view_his.view(message)
 
         elif(message.text == "Нет"):

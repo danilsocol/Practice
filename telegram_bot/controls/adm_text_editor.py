@@ -14,10 +14,9 @@ class adm_text_editor:
     adm_dict = dict()
 
 
-
     def editor_menu_adm(message):
         if (message.text == "Перейти в режим пользователя"):
-            settings.mode_adm = False
+            settings.mode_adm[message.chat.id] = False
             bot.send_message(message.chat.id,
                              text="Вы вернулись".format(
                                  message.from_user), reply_markup=create_menus.markup_start_menu)
@@ -45,7 +44,13 @@ class adm_text_editor:
             bot.send_message(message.chat.id, text="Обновление закончилось")
 
         else:
-            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+            if(message.text == "/start"):
+                settings.mode_adm[message.chat.id] = False
+                bot.send_message(message.chat.id,
+                                 text="Вы в меню".format(
+                                     message.from_user), reply_markup=create_menus.markup_main_menu)
+            else:
+                bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
 
 
     def select_interval(message):

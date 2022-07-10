@@ -53,17 +53,27 @@ class user_text_editor:
 
     async def question_start_viewing_as(message):
         if(message.text == "Да"):
-            collect_inf.user_dict[message.chat.id] = search_inf
+            collect_inf.user_dict[message.chat.id] = search_inf(0,0,0,0,0)
             user_text_editor.start_collect_inf = True
-            database_methods.change_coins(message.chat.id)
-            bot.send_message(message.chat.id,
-                             text="Вы будете искать в своём городе или нет?".format(
-                                 message.from_user), reply_markup=create_menus.markup_menu_yes_no)
-            bot.register_next_step_handler(message, collect_inf.question_search_your_city)
+            if(database_methods.get_user_data(message.chat.id)[4] >= 50):
+                database_methods.change_coins(message.chat.id)
+                bot.send_message(message.chat.id,
+                                 text="Вы будете искать в своём городе или нет?".format(
+                                     message.from_user), reply_markup=create_menus.markup_menu_yes_no)
+                bot.register_next_step_handler(message, collect_inf.question_search_your_city)
+            else:
+                bot.send_message(message.chat.id,
+                                 text="Вам не хватает койнов".format(
+                                     message.from_user), reply_markup=create_menus.markup_main_menu)
 
         elif(message.text == "Нет"):
             bot.send_message(message.chat.id,
                              text="Вы венулись в меню".format(
                                  message.from_user),reply_markup=create_menus.markup_main_menu)
         else:
-            bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")
+            if (message.text == "/start"):
+                bot.send_message(message.chat.id,
+                                 text="Вы в меню".format(
+                                     message.from_user), reply_markup=create_menus.markup_main_menu)
+            else:
+                bot.send_message(message.chat.id, text="На такую комманду я не запрограммировал..")

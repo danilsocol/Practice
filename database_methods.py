@@ -5,7 +5,6 @@ import json
 import asyncio
 import datetime
 
-from null import Null
 
 import avito_parser as pa
 import Youla_parser as yp
@@ -390,9 +389,9 @@ class database_methods:
     #получаем объявления из бд
     @staticmethod
     def get_ads_from_db(user_id, request, city, lower_bound=0, upper_bound=1_000_000):
-        if(lower_bound == Null):
+        if(lower_bound == None):
             lower_bound = 0
-        if(upper_bound == Null):
+        if(upper_bound == None):
             upper_bound = 1_000_000
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
