@@ -14,7 +14,7 @@ import pandas as pd
 class graph_creater:
 
     @staticmethod
-    def graph_creat(step,mass,list_x,id):
+    def graph_creat(step,mass,list_x,id,str_x = "Время",str_y = "Кол-во"):
         fig = plt.figure(figsize=(6, 4))
         ax = fig.add_subplot()
 
@@ -23,10 +23,10 @@ class graph_creater:
 
         y = mass
         ax.bar(x, y)
-        plt.xlabel('Time', fontsize=14)
-        plt.ylabel('Count', fontsize=14)
+        plt.xlabel(str_x, fontsize=14)
+        plt.ylabel(str_y, fontsize=14)
         for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-            label.set_fontsize(4)
+            label.set_fontsize(3)
 
         plt.savefig(f'graph{id}', dpi= 1000)
 

@@ -44,7 +44,7 @@ class create_menus:
 
 
     async def create_adm_menu(markup):
-        btn_activity = types.KeyboardButton("Просмотреть кол-во активности пользователей")
+        btn_activity = types.KeyboardButton("Просмотреть активность пользователей")
         btn_number_of_requests = types.KeyboardButton("Просмотреть кол-во запросов")
         btn_number_of_new_users = types.KeyboardButton("Просмотреть кол-во новых пользователей")
         btn_add_user_coins = types.KeyboardButton("Добавить пользователю койны")

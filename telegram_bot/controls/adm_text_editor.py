@@ -21,15 +21,15 @@ class adm_text_editor:
                              text="Вы вернулись".format(
                                  message.from_user), reply_markup=create_menus.markup_start_menu)
 
-        elif( message.text == "Просмотреть активности пользователей"):
+        elif( message.text == "Просмотреть активность пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "act"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Просмотреть запросов"):
+        elif (message.text == "Просмотреть кол-во запросов"):
             adm_text_editor.adm_dict[message.chat.id] = "req"
             adm_text_editor.select_interval(message)
 
-        elif (message.text == "Просмотреть новых пользователей"):
+        elif (message.text == "Просмотреть кол-во новых пользователей"):
             adm_text_editor.adm_dict[message.chat.id] = "rook"
             adm_text_editor.select_interval(message)
 
@@ -100,29 +100,43 @@ class adm_text_editor:
             if (message.text == "Неделя"):
                 req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=6),
                                                         datetime.date.today())
+                graph_creater.graph_creat(7, graph_creater.pull_day(7, req), graph_creater.week_day(), message.chat.id,"Дни","Кол-во запросов")
+                img = open(f"graph{message.chat.id}.png", 'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
                 bot.send_message(message.chat.id,
-                                 text=f"В выбранный промежуток времени было {req} запросов".format(
+                                 text="Что то ещё?".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
 
             elif (message.text == "Месяц"):
                 req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=29),
                                                         datetime.date.today())
+                graph_creater.graph_creat(30, graph_creater.pull_day(30, req), graph_creater.month(), message.chat.id,"Дни","Кол-во запросов")
+                img = open(f"graph{message.chat.id}.png", 'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
                 bot.send_message(message.chat.id,
-                                 text=f"В выбранный промежуток времени было {req} запросов".format(
+                                 text="Что то ещё?".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
             elif (message.text == "Год"):
-                req = database_methods.get_requests_count(datetime.date.today() - datetime.timedelta(days=364),
-                                                        datetime.date.today())
+                req = database_methods.get_request_count_months(datetime.date.today() - relativedelta(months = 11),11)
+                graph_creater.graph_creat(12, graph_creater.pull_month(12, req), graph_creater.year(), message.chat.id,"Месяцы","Кол-во запросов")
+                img = open(f"graph{message.chat.id}.png", 'rb')
+                bot.send_photo(message.chat.id, photo=img)
+                img.close()
+                os.remove(f"D:/Project/Practic/graph{message.chat.id}.png")
                 bot.send_message(message.chat.id,
-                                 text=f"В выбранный промежуток времени было {req} запросов".format(
+                                 text="Что то ещё?".format(
                                      message.from_user), reply_markup=create_menus.markup_adm_menu)
 
         elif (adm_text_editor.adm_dict[message.chat.id] == "rook"):
             if (message.text == "Неделя"):
                 rook = database_methods.get_list_rookie(datetime.date.today() - datetime.timedelta(days=6),datetime.date.today())
-                graph_creater.graph_creat(7, graph_creater.pull_day(7,rook), graph_creater.week_day(),message.chat.id)
+                graph_creater.graph_creat(7, graph_creater.pull_day(7,rook), graph_creater.week_day(),message.chat.id,"Дни","Кол-во новых пользователей")
                 img = open(f"graph{message.chat.id}.png",'rb')
                 bot.send_photo(message.chat.id, photo=img)
                 img.close()
@@ -133,7 +147,7 @@ class adm_text_editor:
 
             elif (message.text == "Месяц"):
                 rook = database_methods.get_list_rookie(datetime.date.today() - datetime.timedelta(days=29), datetime.date.today())
-                graph_creater.graph_creat(30,graph_creater.pull_day(30,rook), graph_creater.month(),message.chat.id)
+                graph_creater.graph_creat(30,graph_creater.pull_day(30,rook), graph_creater.month(),message.chat.id,"Дни","Кол-во новых пользователей")
                 img = open(f"graph{message.chat.id}.png",'rb')
                 bot.send_photo(message.chat.id, photo=img)
                 img.close()
@@ -144,7 +158,7 @@ class adm_text_editor:
 
             elif (message.text == "Год"):
                 rook = database_methods.get_list_rookie_months(datetime.date.today() - relativedelta(months = 11),11)
-                graph_creater.graph_creat(12,graph_creater.pull_month(12,rook), graph_creater.year(),message.chat.id)
+                graph_creater.graph_creat(12,graph_creater.pull_month(12,rook), graph_creater.year(),message.chat.id,"Месяцы","Кол-во новых пользователей")
                 img = open(f"graph{message.chat.id}.png",'rb')
                 bot.send_photo(message.chat.id, photo=img)
                 img.close()

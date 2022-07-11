@@ -152,7 +152,7 @@ class database_methods:
         days_count = (end_date - start_date).days
         conn = sqlite3.connect('BuyBot.db')
         cur = conn.cursor()
-        result = 0
+        result = {}
         for i in range(0, days_count + 1):
             key = start_date + datetime.timedelta(days=i)
             cur.execute("""
@@ -160,7 +160,7 @@ class database_methods:
           WHERE strftime('%Y-%m-%d', date_time) =:outer
           """, {'outer': key})
             temp = cur.fetchone()
-            result += temp[0]
+            result[key] = temp[0]
         cur.close()
         conn.close()
         return result
@@ -178,6 +178,24 @@ class database_methods:
         conn.commit()
         cur.close()
         conn.close()
+
+    @staticmethod
+    def get_request_count_months(start_date, months_count):
+        conn = sqlite3.connect('BuyBot.db')
+        cur = conn.cursor()
+        result = {}
+        for i in range(0, months_count + 1):
+            key = start_date + relativedelta(months=i)
+            cur.execute("""
+                    SELECT COUNT(*) FROM Requests
+                    WHERE 
+                    strftime('%Y-%m', date_time) = strftime('%Y-%m', :outer)
+                    """, {'outer': key})
+            temp = cur.fetchone()
+            result[key] = temp[0]
+        cur.close()
+        conn.close()
+        return result  # list
 
     #объявления с авито
     @staticmethod

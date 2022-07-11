@@ -54,7 +54,7 @@ class main:
             arr = database_methods.fav_updates(call.message.chat.id, str(call.data).split()[1])
             try:
                 a, b = zip(*arr)
-                graph_creater.graph_creat( len(a),b,a,call.message.chat.id)
+                graph_creater.graph_creat( len(a),b,a,call.message.chat.id,"Дни","Цена")
                 img = open(f"graph{call.message.chat.id}.png", 'rb')
                 bot.send_photo(call.message.chat.id, photo=img)
                 img.close()

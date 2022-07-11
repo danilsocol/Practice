@@ -83,7 +83,7 @@ class output_ad:
 
     def output_bd(message):
         over_ad = True
-        for i in range(output_ad.count[message.chat.id], output_ad.count[message.chat.id] + 5):
+        for i in range(output_ad.count[message.chat.id], output_ad.count[message.chat.id] + 3):
             if (len(output_ad.ad_bd[message.chat.id]) <= i):
                 over_ad = False
                 break
@@ -104,7 +104,7 @@ class output_ad:
                                  message.from_user), reply_markup=create_menus.markup_main_menu)
 
         else:
-            output_ad.count += 5
+            output_ad.count += 3
             bot.register_next_step_handler(message, output_ad.editor_bd)
             bot.send_message(message.chat.id,
                              text="Вы хотите ещё?".format(
@@ -113,7 +113,7 @@ class output_ad:
     def output_parse(message):
         over_ad = [True, True]
         #over_ad = [True]
-        for i in range(output_ad.count[message.chat.id],output_ad.count[message.chat.id]+5):
+        for i in range(output_ad.count[message.chat.id],output_ad.count[message.chat.id]+3):
             if(len(output_ad.ad_youla[message.chat.id]) <= i):
                 over_ad[0] = False
                 break
@@ -126,7 +126,7 @@ class output_ad:
                               f"Ссылка: {output_ad.ad_youla[message.chat.id][i]['url']}".format(
                              message.from_user), reply_markup=markup)
 
-        for i in range(output_ad.count[message.chat.id],output_ad.count[message.chat.id]+5):
+        for i in range(output_ad.count[message.chat.id],output_ad.count[message.chat.id]+3):
             if (len(output_ad.ad_avito[message.chat.id]) <= i):
                 over_ad[1] = False
                 break
@@ -147,7 +147,7 @@ class output_ad:
                                  message.from_user), reply_markup=create_menus.markup_main_menu)
 
         else:
-            output_ad.count[message.chat.id] += 5
+            output_ad.count[message.chat.id] += 3
             bot.register_next_step_handler(message, output_ad.editor_parse)
             bot.send_message(message.chat.id,
                              text="Вы хотите ещё?".format(
