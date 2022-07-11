@@ -66,7 +66,8 @@ class adm_text_editor:
             bot.send_message(message.chat.id,
                              text=f"Койны были добавлены".format(
                                  message.from_user), reply_markup=create_menus.markup_adm_menu)
-
+        else:
+            bot.register_next_step_handler(message, adm_text_editor.editor_menu_adm)
 
     def editor_interval(message):
         asyncio.run(adm_text_editor.editor_interval_as(message))

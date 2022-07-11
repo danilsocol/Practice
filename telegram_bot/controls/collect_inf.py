@@ -69,7 +69,13 @@ class collect_inf:
 
 
     def get_city(message):
+        try:
             asyncio.run(collect_inf.get_city_as(message))
+        except:
+            bot.register_next_step_handler(message, collect_inf.get_city)
+            bot.send_message(message.chat.id,
+                             text="Не верно введены данные, пожалуйста  повторите попытку".format(
+                                 message.from_user), reply_markup=create_menus.markup_range_type)
 
 
     def question_search_your_city(message):
@@ -110,7 +116,13 @@ class collect_inf:
 
 
     def get_sphere(message):
-        asyncio.run(collect_inf.get_sphere_as(message))
+        try:
+            asyncio.run(collect_inf.get_sphere_as(message))
+        except:
+            bot.register_next_step_handler(message, collect_inf.get_sphere)
+            bot.send_message(message.chat.id,
+                             text="Не верно введены данные, пожалуйста  повторите попытку".format(
+                                 message.from_user), reply_markup=create_menus.markup_range_type)
 
 
     async def get_sphere_as(message):
@@ -126,7 +138,13 @@ class collect_inf:
 
 
     def get_type_range(message):
-        asyncio.run(collect_inf.get_type_range_as(message))
+        try:
+           asyncio.run(collect_inf.get_type_range_as(message))
+        except:
+            bot.register_next_step_handler(message, collect_inf.get_type_range)
+            bot.send_message(message.chat.id,
+                             text="Не верно введены данные, пожалуйста  повторите попытку".format(
+                                 message.from_user), reply_markup=create_menus.markup_range_type)
 
 
     async def get_type_range_as(message):
@@ -150,7 +168,13 @@ class collect_inf:
 
 
     def get_range(message):
+        try:
            asyncio.run(collect_inf.get_range_as(message))
+        except:
+            bot.register_next_step_handler(message, collect_inf.get_range)
+            bot.send_message(message.chat.id,
+                             text="Не верно введены данные, пожалуйста  повторите попытку".format(
+                                 message.from_user), reply_markup=create_menus.markup_range_type)
 
     async def get_range_as(message):
         if (message.text == "Назад" or message.text == "Меню"):

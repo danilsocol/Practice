@@ -83,7 +83,7 @@ class output_ad:
 
     def output_bd(message):
         over_ad = True
-        for i in range(output_ad.count[message.chat.id], output_ad.count[message.chat.id] + 3):
+        for i in range(output_ad.count[message.chat.id], output_ad.count[message.chat.id] + 6):
             if (len(output_ad.ad_bd[message.chat.id]) <= i):
                 over_ad = False
                 break
@@ -104,7 +104,7 @@ class output_ad:
                                  message.from_user), reply_markup=create_menus.markup_main_menu)
 
         else:
-            output_ad.count += 3
+            output_ad.count[message.chat.id] += 6
             bot.register_next_step_handler(message, output_ad.editor_bd)
             bot.send_message(message.chat.id,
                              text="Вы хотите ещё?".format(

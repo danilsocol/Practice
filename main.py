@@ -41,11 +41,13 @@ class main:
     # Text
     @bot.message_handler(content_types=['text'])
     def text(message):
-        if(settings.mode_adm[message.chat.id]):
-            adm_text_editor.editor_menu_adm(message)
-        else:
-            asyncio.run(user_text_editor.user_editor(message))
-
+        try:
+            if(settings.mode_adm[message.chat.id]):
+                adm_text_editor.editor_menu_adm(message)
+            else:
+                asyncio.run(user_text_editor.user_editor(message))
+        except:
+            bot.register_next_step_handler(message, main.text)
 
     @bot.callback_query_handler(func=lambda call: True)
     def handle(call):
